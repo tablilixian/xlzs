@@ -1,0 +1,19 @@
+{
+  "name": "训练助手",
+  "short_name": "训练助手",
+  "description": "专属私密训练站 - 三阶段科学训练法",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23000' width='192' height='192' rx='32'/><circle cx='96' cy='96' r='48' fill='none' stroke='%23E6A817' stroke-width='8'/><circle cx='96' cy='96' r='8' fill='%23E6A817'/><line x1='96' y1='48' x2='96' y2='72' stroke='%23E6A817' stroke-width='6' stroke-linecap='round'/><line x1='96' y1='120' x2='96' y2='144' stroke='%23E6A817' stroke-width='6' stroke-linecap='round'/><line x1='48' y1='96' x2='72' y2='96' stroke='%23E6A817' stroke-width='6' stroke-linecap='round'/><line x1='120' y1='96' x2='144' y2='96' stroke='%23E6A817' stroke-width='6' stroke-linecap='round'/></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "fitness", "lifestyle"]
+}
