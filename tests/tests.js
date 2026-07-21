@@ -10,34 +10,39 @@ QUnit.module('Storage', function() {
   QUnit.test('getRecords default state', function(assert) {
     localStorage.clear();
     const rec = Storage.getRecords();
-    assert.deepEqual(rec, { dates: [], total: 0, streak: 0 }, 'default records structure');
+    assert.deepEqual(rec, { dates: [], total: 0, streak: 0, detailed: [] }, 'default records structure');
   });
 
   QUnit.test('addRecord increments total', function(assert) {
     localStorage.clear();
-    Storage.addRecord();
+    Storage.addRecord('full', 'intermediate', 3, 12);
     const rec = Storage.getRecords();
     assert.equal(rec.total, 1, 'total incremented to 1');
     assert.equal(rec.dates.length, 1, 'one date recorded');
     assert.equal(rec.dates[0], new Date().toISOString().split('T')[0], 'today date recorded');
+    assert.equal(rec.detailed.length, 1, 'one detailed record');
+    assert.equal(rec.detailed[0].plan, 'full', 'plan recorded');
+    assert.equal(rec.detailed[0].level, 'intermediate', 'level recorded');
   });
 
   QUnit.test('addRecord deduplicates same day', function(assert) {
     localStorage.clear();
-    Storage.addRecord();
-    Storage.addRecord();
+    Storage.addRecord('full', 'intermediate', 3, 12);
+    Storage.addRecord('full', 'intermediate', 3, 12);
     const rec = Storage.getRecords();
     assert.equal(rec.total, 1, 'total still 1 after duplicate');
     assert.equal(rec.dates.length, 1, 'still one date');
+    assert.equal(rec.detailed.length, 2, 'two detailed records');
   });
 
   QUnit.test('resetRecords clears data', function(assert) {
     localStorage.clear();
-    Storage.addRecord();
+    Storage.addRecord('full', 'intermediate', 3, 12);
     Storage.resetRecords();
     const rec = Storage.getRecords();
     assert.equal(rec.total, 0, 'total reset to 0');
     assert.equal(rec.dates.length, 0, 'dates cleared');
+    assert.equal(rec.detailed.length, 0, 'detailed records cleared');
   });
 
   QUnit.test('emergency stop records', function(assert) {

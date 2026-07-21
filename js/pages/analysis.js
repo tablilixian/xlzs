@@ -73,20 +73,35 @@ function refreshAnalysis() {
   // Record list
   const recordList = document.getElementById('analRecordList');
   recordList.innerHTML = '';
-  if (!records.dates || records.dates.length === 0) {
+  const detailedRecords = records.detailed || [];
+  if (detailedRecords.length === 0) {
     recordList.innerHTML = '<div class="analysis-empty">暂无训练记录</div>';
   } else {
-    [...records.dates].reverse().slice(0, 30).forEach(d => {
+    [...detailedRecords].reverse().slice(0, 30).forEach(rec => {
       const item = document.createElement('div');
       item.className = 'analysis-record-item';
-      const hasFailure = failures.some(f => f.date && f.date.startsWith(d));
-      const dayPrep = prepRecords.filter(p => p.date && p.date.startsWith(d));
+      const dateObj = new Date(rec.date);
+      const dateStr = rec.date.split('T')[0];
+      const timeStr = dateObj.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+      const hasFailure = failures.some(f => f.date && f.date.startsWith(dateStr));
+      const dayPrep = prepRecords.filter(p => p.date && p.date.startsWith(dateStr));
       let prepStr = '';
       if (dayPrep.length > 0) {
         const avgPrep = Math.round(dayPrep.reduce((a, b) => a + b.seconds, 0) / dayPrep.length);
         prepStr = ' · 唤醒' + avgPrep + 's';
       }
-      item.innerHTML = '<span class="analysis-record-date">' + d + '</span><span class="analysis-record-status ' + (hasFailure ? 'fail' : 'success') + '">' + (hasFailure ? '失败' : '完成') + prepStr + '</span>';
+      item.innerHTML = `
+        <div class="analysis-record-main">
+          <span class="analysis-record-date">${dateStr}</span>
+          <span class="analysis-record-time">${timeStr}</span>
+        </div>
+        <div class="analysis-record-detail">
+          <span class="analysis-record-plan">${rec.planName || '未知计划'}</span>
+          <span class="analysis-record-level">${rec.levelName || '初级'}</span>
+          ${rec.totalDuration ? `<span class="analysis-record-duration">${rec.totalDuration}分钟</span>` : ''}
+          <span class="analysis-record-status ${hasFailure ? 'fail' : 'success'}">${hasFailure ? '失败' : '完成'}${prepStr}</span>
+        </div>
+      `;
       recordList.appendChild(item);
     });
   }

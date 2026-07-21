@@ -127,7 +127,7 @@ function startTraining() {
   if (!planData) { showToast('计划数据错误'); return; }
   const s = loadSettings();
   trainingState.vibrationEnabled = s.vibDefault;
-  voiceCoachEnabled = false;
+  voiceCoachEnabled = s.voiceCoachEnabled !== false;
   trainingState._planData = planData;
   trainingState._planModules = [0].concat(TRAINING_PLANS[currentPlan].modules);
   currentVoiceDensity = TRAINING_PLANS[currentPlan].defaultVoice || 'cycle';
@@ -137,8 +137,9 @@ function startTraining() {
   document.getElementById('emergencyBtn').style.display = 'none';
   document.getElementById('extraControls').style.display = 'none';
   document.getElementById('trainingActiveControls').style.display = 'none';
-  document.getElementById('voiceBtnText').textContent = '语音教练';
+  document.getElementById('voiceBtnText').textContent = voiceCoachEnabled ? '关闭语音' : '语音教练';
   document.getElementById('vibBtnText').textContent = trainingState.vibrationEnabled ? '关闭震动' : '震动模式';
+  document.getElementById('intervalIndicator').style.display = 'none';
 
   requestWakeLock();
   ensureAudioCtx();
@@ -188,8 +189,22 @@ function stopTraining(completed) {
   showTrainingSetup();
 
   if (completed) {
-    Storage.addRecord();
-    showToast('训练完成！今日已打卡');
+    const totalDuration = trainingState._planModules.reduce((acc, phase) => {
+      if (phase === 0) return acc;
+      const phaseKey = 'phase' + phase;
+      const phaseConfig = trainingState._planData && trainingState._planData[phaseKey];
+      return acc + (phaseConfig ? phaseConfig.duration : 0);
+    }, 0);
+    Storage.addRecord(currentPlan, currentPlanLevel, trainingState.currentPhase, totalDuration);
+    
+    const mode = WEEK_MODES[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1];
+    if (mode && mode.isRewardDay) {
+      Storage.addRewardDayRecord();
+      showToast('🎉 奖励日训练完成！今天可以尽情释放');
+    } else {
+      showToast('训练完成！今日已打卡');
+    }
+    
     if (shouldSpeak('phase')) speak(getVoiceText('complete', '恭喜，训练完成'), 'complete');
   } else {
     showToast('训练已结束');
@@ -245,6 +260,10 @@ function startPhase(phase) {
   document.getElementById('trainingActiveControls').style.display = 'block';
   document.getElementById('extraControls').style.display = 'flex';
   document.getElementById('emergencyBtn').style.display = '';
+
+  if (phase !== 2) {
+    document.getElementById('intervalIndicator').style.display = 'none';
+  }
 
   updatePhaseBar(prevPhase);
   updateTrainingUI();
@@ -333,7 +352,9 @@ function startMetronome() {
 
       updateMiniBeatRing(mod === 0 ? 6 : mod);
 
-      if (mod === 1 && shouldSpeak('cycle')) {
+      if (shouldSpeak('beat')) {
+        speak(state.text, 'phase1Beat');
+      } else if (mod === 1 && shouldSpeak('cycle')) {
         speak(state.text, 'phase1Beat');
       }
     }, interval);
@@ -380,6 +401,10 @@ function startMetronome() {
         document.getElementById('instructionText').style.color = state.color;
         document.getElementById('instructionSub').textContent = state.sub;
         updateIntervalIndicator(true, sprintDur - posInCycle);
+        
+        if (shouldSpeak('beat') && posInCycle === 0) {
+          speak(state.text, 'phase2Beat');
+        }
       } else {
         const useHum = (currentSoundMode === 'hum');
         if (!useHum) {
@@ -396,6 +421,10 @@ function startMetronome() {
         document.getElementById('instructionText').style.color = state.color;
         document.getElementById('instructionSub').textContent = state.sub;
         updateIntervalIndicator(false, restDur - (posInCycle - sprintDur));
+        
+        if (shouldSpeak('beat') && restPos === 0) {
+          speak(state.text, 'phase2Beat');
+        }
       }
     }, subInterval);
 
@@ -445,7 +474,9 @@ function startMetronome() {
 
       updateMiniBeatRing(idx + 1);
 
-      if (idx === 0 && shouldSpeak('cycle')) {
+      if (shouldSpeak('beat')) {
+        speak(state.text, 'phase3Beat');
+      } else if (idx === 0 && shouldSpeak('cycle')) {
         speak(state.text, 'phase3Beat');
       }
     }, interval);

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pillow-trainer-v3';
+const CACHE_NAME = 'pillow-trainer-v4';
 const ASSETS = [
   './',
   './index.html',

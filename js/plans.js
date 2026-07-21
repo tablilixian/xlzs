@@ -186,13 +186,13 @@ const VOICE_PROMPTS = [
 ];
 
 const WEEK_MODES = [
-  { name: '爆发挑战', desc: '爆发延长，挑战极限' },
-  { name: '恢复训练', desc: '轻度训练，注重恢复' },
-  { name: '耐力训练', desc: '延长总时长至20分钟' },
-  { name: '休息日', desc: '完全休息或仅做凯格尔' },
-  { name: '节奏训练', desc: '专注节拍跟随精度' },
-  { name: '综合训练', desc: '完整三阶段训练' },
-  { name: '自由训练', desc: '根据感觉自由选择' }
+  { name: '爆发挑战', desc: '爆发延长，挑战极限', icon: '⚡' },
+  { name: '恢复训练', desc: '轻度训练，注重恢复', icon: '🌿' },
+  { name: '耐力训练', desc: '延长总时长至20分钟', icon: '💪' },
+  { name: '休息日', desc: '完全休息或仅做凯格尔', icon: '😴' },
+  { name: '节奏训练', desc: '专注节拍跟随精度', icon: '🎵' },
+  { name: '综合训练', desc: '完整三阶段训练', icon: '🏋️' },
+  { name: '自由训练', desc: '本周奖励日！可以尽情释放', icon: '🎉', isRewardDay: true }
 ];
 const WEEK_DAYS = ['日', '一', '二', '三', '四', '五', '六'];
 

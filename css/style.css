@@ -1103,12 +1103,28 @@ a { color: var(--accent); text-decoration: none; }
 .analysis-failure-list, .analysis-record-list { max-height: 300px; overflow-y: auto; }
 .analysis-empty { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.85rem; }
 .analysis-record-item {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 0.5rem 0; border-bottom: 1px solid var(--bg3); font-size: 0.85rem;
+  padding: 0.75rem 0; border-bottom: 1px solid var(--bg3);
 }
 .analysis-record-item:last-child { border-bottom: none; }
-.analysis-record-date { color: var(--ink); font-weight: 600; }
-.analysis-record-status { color: var(--muted); }
+.analysis-record-main {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 0.3rem;
+}
+.analysis-record-date { color: var(--ink); font-weight: 600; font-size: 0.9rem; }
+.analysis-record-time { color: var(--muted); font-size: 0.75rem; }
+.analysis-record-detail {
+  display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
+}
+.analysis-record-plan { color: var(--accent); font-size: 0.8rem; }
+.analysis-record-level {
+  padding: 0.1rem 0.4rem; border-radius: 4px;
+  background: rgba(0,0,0,0.05); color: var(--muted); font-size: 0.7rem;
+}
+.analysis-record-duration {
+  padding: 0.1rem 0.4rem; border-radius: 4px;
+  background: rgba(0,0,0,0.05); color: var(--muted); font-size: 0.7rem;
+}
+.analysis-record-status { color: var(--muted); font-size: 0.8rem; }
 .analysis-record-status.fail { color: var(--danger); }
 .analysis-record-status.success { color: var(--success); }
 .analysis-failure-item {

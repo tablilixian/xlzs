@@ -12,7 +12,10 @@ function refreshDashboard() {
 
   const mode = WEEK_MODES[now.getDay() === 0 ? 6 : now.getDay() - 1];
   const modeNameEl = document.getElementById('modeName');
-  if (modeNameEl) modeNameEl.innerHTML = mode.name + ' - ' + mode.desc;
+  if (modeNameEl) {
+    const rewardBadge = mode.isRewardDay ? '<span style="display:inline-flex;align-items:center;gap:2px;margin-left:8px;padding:2px 6px;background:rgba(230,168,23,0.15);border-radius:10px;font-size:10px;color:var(--accent);font-weight:600">🎁 奖励日</span>' : '';
+    modeNameEl.innerHTML = (mode.icon || '') + ' ' + mode.name + ' - ' + mode.desc + rewardBadge;
+  }
 
   const rec = Storage.getRecords();
   const statStreakEl = document.getElementById('statStreak');
