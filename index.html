@@ -115,14 +115,6 @@
             <button class="config-btn config-btn-sm active" data-sound="mixed" onclick="selectPlanSound('mixed')">🔄 混合</button>
           </div>
         </div>
-        <div class="config-section">
-          <div class="config-label">语音密度</div>
-          <div class="config-options" data-group="density">
-            <button class="config-btn config-btn-sm" data-density="beat" onclick="selectVoiceDensity('beat')">逐拍</button>
-            <button class="config-btn config-btn-sm active" data-density="cycle" onclick="selectVoiceDensity('cycle')">每周期</button>
-            <button class="config-btn config-btn-sm" data-density="minimal" onclick="selectVoiceDensity('minimal')">极简</button>
-          </div>
-        </div>
       </div>
 
       <div class="controls" id="trainingControls">
@@ -435,47 +427,26 @@
           <label>震动强度</label>
           <div class="stepper"><button onclick="stepperVal('setVibIntensity',-1)" class="stepper-btn">−</button><input type="number" id="setVibIntensity" min="1" max="3" value="2" onchange="saveSettings()"><button onclick="stepperVal('setVibIntensity',1)" class="stepper-btn">+</button></div>
         </div>
-      </div>
-    </div>
-
-    <div class="setting-group collapsible">
-      <div class="setting-group-header" onclick="toggleSettingGroup(this)">
-        <span class="setting-group-title">🎤 语音自定义</span>
-        <span class="setting-group-arrow">▼</span>
-      </div>
-      <div class="setting-group-content">
-        <div class="setting-item setting-row">
-          <label>推入指令</label>
-          <input type="text" id="setTextPush" value="吸气，缓慢推入" onchange="saveSettings()" style="width:100%">
-        </div>
-        <div class="setting-item setting-row">
-          <label>抽出指令</label>
-          <input type="text" id="setTextPull" value="呼气，缓慢抽出" onchange="saveSettings()" style="width:100%">
-        </div>
-        <div class="setting-item setting-row">
-          <label>暂停指令</label>
-          <input type="text" id="setTextPause" value="保持不动，深呼吸" onchange="saveSettings()" style="width:100%">
-        </div>
-        <div class="setting-item setting-row">
-          <label>凯格尔指令</label>
-          <input type="text" id="setTextKegel" value="收紧PC肌，保持收缩" onchange="saveSettings()" style="width:100%">
+        <div class="setting-item" style="flex-direction:column;align-items:flex-start">
+          <label>语音密度</label>
+          <div class="config-options" style="width:100%;margin-top:0.5rem">
+            <button class="config-btn config-btn-sm density-btn" data-density="beat" onclick="selectVoiceDensity('beat')">逐拍</button>
+            <button class="config-btn config-btn-sm density-btn active" data-density="cycle" onclick="selectVoiceDensity('cycle')">每周期</button>
+            <button class="config-btn config-btn-sm density-btn" data-density="minimal" onclick="selectVoiceDensity('minimal')">极简</button>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="setting-group collapsible">
       <div class="setting-group-header" onclick="toggleSettingGroup(this)">
-        <span class="setting-group-title">🗣️ 语音提示列表</span>
+        <span class="setting-group-title">🗣️ 语音提示开关</span>
         <span class="setting-group-arrow">▼</span>
       </div>
       <div class="setting-group-content">
         <div class="setting-item">
           <label>测试语音</label>
           <button class="btn btn-sm btn-ghost" onclick="testVoice()">播放测试</button>
-        </div>
-        <div class="setting-item setting-row" style="flex-direction:column;align-items:flex-start">
-          <label>当前语音</label>
-          <span style="font-size:0.8rem;color:var(--muted);margin-top:0.25rem" id="voiceStatus">检测中...</span>
         </div>
         <div id="voicePromptsContainer"></div>
       </div>

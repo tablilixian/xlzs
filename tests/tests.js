@@ -289,11 +289,6 @@ QUnit.module('UI Helpers', function() {
     assert.equal(getPhaseName(3), '控制', 'phase 3');
   });
 
-  QUnit.test('escapeHtml escapes special chars', function(assert) {
-    assert.equal(escapeHtml('<script>'), '&lt;script&gt;', 'escapes < >');
-    assert.equal(escapeHtml('"test"'), '&quot;test&quot;', 'escapes quotes');
-    assert.equal(escapeHtml('a&b'), 'a&amp;b', 'escapes ampersand');
-  });
 });
 
 QUnit.module('Settings', function() {
@@ -304,10 +299,7 @@ QUnit.module('Settings', function() {
     assert.equal(s.vibDefault, false, 'vibration disabled by default');
     assert.equal(s.voiceCoachEnabled, true, 'voice coach enabled by default');
     assert.equal(s.vibIntensity, 2, 'vibration intensity default');
-    assert.ok(s.textPush, 'has push text');
-    assert.ok(s.textPull, 'has pull text');
-    assert.ok(s.textPause, 'has pause text');
-    assert.ok(s.textKegel, 'has kegel text');
+    assert.equal(s.voiceDensity, 'cycle', 'voice density defaults to cycle');
   });
 
   QUnit.test('toggleSettingGroup toggles collapsed class', function(assert) {

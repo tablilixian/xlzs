@@ -34,7 +34,7 @@ function navigateTo(page) {
   } else {
     nav.style.display = '';
   }
-  if (page === 'settings') { populateSettings(); updateVoiceStatus(); }
+  if (page === 'settings') { populateSettings(); }
   if (page === 'training') initTraining();
   if (page === 'dashboard') refreshDashboard();
   if (page === 'analysis') refreshAnalysis();

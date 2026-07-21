@@ -53,60 +53,60 @@ function getPlanPhaseStates(phaseNum) {
     if (p === 'breathReset' || p === 'meditation') {
       return [
         null,
-        { text: '深吸气',   sub: '腹部鼓起，缓慢吸气', color: 'var(--accent)' },
-        { text: '屏息',     sub: '保持气息，放松身体', color: '#4A9EFF' },
-        { text: '屏息保持', sub: '继续屏息，感受充盈', color: '#4A9EFF' },
-        { text: '缓慢呼气', sub: '腹部收回，深长呼气', color: 'var(--success)' },
-        { text: '完全呼出', sub: '继续呼气，放松身心', color: 'var(--success)' },
-        { text: '空息',     sub: '保持空息，感受平静', color: '#4A9EFF' },
+        { text: '吸气', sub: '腹部鼓起，缓慢吸气', color: 'var(--accent)' },
+        { text: '屏息', sub: '保持气息，放松身体', color: '#4A9EFF' },
+        { text: '屏息', sub: '继续屏息，感受充盈', color: '#4A9EFF' },
+        { text: '呼气', sub: '腹部收回，深长呼气', color: 'var(--success)' },
+        { text: '呼出', sub: '继续呼气，放松身心', color: 'var(--success)' },
+        { text: '空息', sub: '保持空息，感受平静', color: '#4A9EFF' },
       ];
     }
     if (p === 'sleepRelax' || p === 'morningBoost') {
       return [
         null,
-        { text: '缓慢推入', sub: '轻柔地推入，感受节奏', color: 'var(--accent)' },
-        { text: '继续深入', sub: '保持平稳，配合呼吸', color: 'var(--accent)' },
-        { text: '深处停留', sub: '放松，感受身体反应', color: '#4A9EFF' },
-        { text: '轻柔抽出', sub: '缓慢退出，深长呼气', color: 'var(--success)' },
-        { text: '继续退出', sub: '放松盆底，完全呼出', color: 'var(--success)' },
-        { text: '入口停留', sub: '保持不动，深呼吸',   color: '#4A9EFF' },
+        { text: '推入',   sub: '轻柔地推入，感受节奏', color: 'var(--accent)' },
+        { text: '深入',   sub: '保持平稳，配合呼吸', color: 'var(--accent)' },
+        { text: '停',     sub: '放松，感受身体反应', color: '#4A9EFF' },
+        { text: '抽出',   sub: '缓慢退出，深长呼气', color: 'var(--success)' },
+        { text: '退出',   sub: '放松盆底，完全呼出', color: 'var(--success)' },
+        { text: '入口停', sub: '保持不动，深呼吸',   color: '#4A9EFF' },
       ];
     }
     return [
       null,
-      { text: '匀速推入',   sub: '缓慢到底，吸气配合', color: 'var(--accent)' },
-      { text: '继续深入',   sub: '继续深入，保持节奏', color: 'var(--accent)' },
-      { text: '深处停止',   sub: '保持不动，深呼吸',   color: '#4A9EFF' },
-      { text: '匀速抽出',   sub: '缓慢退至入口，呼气', color: 'var(--success)' },
-      { text: '继续退出',   sub: '继续退出，放松身体', color: 'var(--success)' },
-      { text: '入口停止',   sub: '保持不动，深呼吸',   color: '#4A9EFF' },
+      { text: '推入',   sub: '缓慢到底，吸气配合', color: 'var(--accent)' },
+      { text: '深入',   sub: '继续深入，保持节奏', color: 'var(--accent)' },
+      { text: '停',     sub: '保持不动，深呼吸',   color: '#4A9EFF' },
+      { text: '抽出',   sub: '缓慢退至入口，呼气', color: 'var(--success)' },
+      { text: '退出',   sub: '继续退出，放松身体', color: 'var(--success)' },
+      { text: '入口停', sub: '保持不动，深呼吸',   color: '#4A9EFF' },
     ];
   }
   if (phaseNum === 2) {
     return {
-      sprint: { text: '全力冲刺', sub: '加速运动，全力以赴', color: 'var(--accent2)' },
-      rest:   { text: '停止休息', sub: '降低强度，恢复呼吸', color: 'var(--success)' },
+      sprint: { text: '冲刺', sub: '加速运动，全力以赴', color: 'var(--accent2)' },
+      rest:   { text: '休息', sub: '降低强度，恢复呼吸', color: 'var(--success)' },
     };
   }
   if (phaseNum === 3) {
     if (p === 'pcMuscle' || p === 'kegelPro') {
       return [
-        { text: '吸气放松',     sub: '放松PC肌，深吸气', color: 'var(--success)' },
-        { text: '呼气收缩',     sub: '收紧PC肌，缓慢呼气', color: 'var(--accent)' },
-        { text: '保持收缩',     sub: '持续收紧，感受控制', color: '#4A9EFF' },
+        { text: '吸气',   sub: '放松PC肌，深吸气', color: 'var(--success)' },
+        { text: '呼+收',   sub: '收紧PC肌，缓慢呼气', color: 'var(--accent)' },
+        { text: '保持',   sub: '持续收紧，感受控制', color: '#4A9EFF' },
       ];
     }
     if (p === 'breathReset' || p === 'meditation') {
       return [
-        { text: '深吸气',       sub: '腹部鼓起，缓慢吸气', color: 'var(--accent)' },
-        { text: '屏息保持',     sub: '保持气息，感受控制', color: '#4A9EFF' },
-        { text: '深长呼气',     sub: '腹部收回，完全呼出', color: 'var(--success)' },
+        { text: '吸气',   sub: '腹部鼓起，缓慢吸气', color: 'var(--accent)' },
+        { text: '屏息',   sub: '保持气息，感受控制', color: '#4A9EFF' },
+        { text: '呼气',   sub: '腹部收回，完全呼出', color: 'var(--success)' },
       ];
     }
     return [
-      { text: '推入+凯格尔', sub: '收紧PC肌，缓慢推入', color: 'var(--accent)' },
-      { text: '保持收缩',   sub: '持续收紧，感受控制', color: '#4A9EFF' },
-      { text: '抽出+放松',  sub: '放松PC肌，缓慢抽出', color: 'var(--success)' },
+      { text: '推+收', sub: '收紧PC肌，缓慢推入', color: 'var(--accent)' },
+      { text: '保持',  sub: '持续收紧，感受控制', color: '#4A9EFF' },
+      { text: '抽+放', sub: '放松PC肌，缓慢抽出', color: 'var(--success)' },
     ];
   }
   return [];
@@ -128,9 +128,9 @@ function startTraining() {
   const s = loadSettings();
   trainingState.vibrationEnabled = s.vibDefault;
   voiceCoachEnabled = s.voiceCoachEnabled !== false;
+  currentVoiceDensity = s.voiceDensity || 'cycle';
   trainingState._planData = planData;
   trainingState._planModules = [0].concat(TRAINING_PLANS[currentPlan].modules);
-  currentVoiceDensity = TRAINING_PLANS[currentPlan].defaultVoice || 'cycle';
 
   showTrainingActive();
 
@@ -155,7 +155,7 @@ function pauseTraining() {
   clearInterval(trainingState.countdownTimer);
   stopPhase1Osc();
   updateStartButton();
-  speak(getVoiceText('pause', '训练暂停'), 'pause');
+  speak('训练暂停', 'pause');
   document.getElementById('trainingStatus').textContent = '已暂停';
 }
 
@@ -205,7 +205,7 @@ function stopTraining(completed) {
       showToast('训练完成！今日已打卡');
     }
     
-    if (shouldSpeak('phase')) speak(getVoiceText('complete', '恭喜，训练完成'), 'complete');
+    if (shouldSpeak('phase')) speak('训练完成', 'complete');
   } else {
     showToast('训练已结束');
   }
@@ -242,9 +242,9 @@ function startPhase(phase) {
 
   if (prevPhase > 0 && prevPhase !== phase) {
     playPhaseChange();
-    if (shouldSpeak('phase')) speak(getVoiceText('phaseChange', '进入' + getPhaseName(phase) + '阶段'), 'phaseChange', phase);
+    if (shouldSpeak('phase')) speak('进入' + getPhaseName(phase), 'phaseChange', phase);
   } else {
-    if (shouldSpeak('phase')) speak(getVoiceText('start', '训练开始，' + getPhaseName(phase) + '阶段'), 'start');
+    if (shouldSpeak('phase')) speak(getPhaseName(phase) + '开始', 'start');
   }
 
   if (phaseConfig.sprintSec !== undefined) {
@@ -402,13 +402,15 @@ function startMetronome() {
         document.getElementById('instructionSub').textContent = state.sub;
         updateIntervalIndicator(true, sprintDur - posInCycle);
         
-        if (shouldSpeak('beat') && posInCycle === 0) {
+        if (posInCycle === 0 && shouldSpeak('beat')) {
+          speak(state.text, 'phase2Beat');
+        } else if (posInCycle === 0 && shouldSpeak('cycle')) {
           speak(state.text, 'phase2Beat');
         }
       } else {
+        const restPos = posInCycle - sprintDur;
         const useHum = (currentSoundMode === 'hum');
         if (!useHum) {
-          const restPos = posInCycle - sprintDur;
           if (restPos % 3 === 0 && subTickAcc >= 990) {
             playTick(300, 0.1);
             subTickAcc = 0;
@@ -422,7 +424,9 @@ function startMetronome() {
         document.getElementById('instructionSub').textContent = state.sub;
         updateIntervalIndicator(false, restDur - (posInCycle - sprintDur));
         
-        if (shouldSpeak('beat') && restPos === 0) {
+        if (restPos === 0 && shouldSpeak('beat')) {
+          speak(state.text, 'phase2Beat');
+        } else if (restPos === 0 && shouldSpeak('cycle')) {
           speak(state.text, 'phase2Beat');
         }
       }
@@ -546,7 +550,7 @@ function emergencyStop() {
   overlay.classList.add('active');
   document.getElementById('cooldownNumber').textContent = cooldown;
   document.getElementById('cooldownResumeOpt').style.display = 'flex';
-  speak(getVoiceText('emergency', '紧急刹车，开始冷却'), 'emergency');
+  speak('紧急停止', 'emergency');
 
   const cooldownTimer = setInterval(() => {
     cooldown--;
@@ -569,9 +573,9 @@ function exitCooldown(resumeFromPhase) {
     const targetPhase = resumeFromPhase || trainingState._planModules[0] || 1;
     startPhase(targetPhase);
     if (targetPhase === trainingState._emergencyPhase && targetPhase > 1) {
-      speak(getVoiceText('restart', '恢复训练，回到' + getPhaseName(targetPhase) + '阶段'), 'restart');
+      speak('继续，' + getPhaseName(targetPhase), 'restart');
     } else {
-      speak(getVoiceText('restart', '重新开始，回到' + getPhaseName(targetPhase) + '阶段'), 'restart');
+      speak('重开，' + getPhaseName(targetPhase), 'restart');
     }
   }
 }

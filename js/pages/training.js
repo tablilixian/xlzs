@@ -24,7 +24,6 @@ function selectPlan(planId) {
   const plan = TRAINING_PLANS[planId];
   if (!plan) return;
   currentSoundMode = plan.defaultSound || 'mixed';
-  currentVoiceDensity = plan.defaultVoice || 'cycle';
   renderPlanCards();
   syncPlanUI();
   updateTrainingUI();
@@ -50,15 +49,6 @@ function selectPlanSound(mode) {
     b.classList.toggle('active', b.dataset.sound === mode);
   });
   showToast('声音已切换：' + (mode === 'hum' ? '嗡嗡声' : mode === 'tick' ? '节拍器' : '混合'));
-}
-
-function selectVoiceDensity(density) {
-  if (trainingState.isRunning) return;
-  currentVoiceDensity = density;
-  document.querySelectorAll('.config-btn[data-density]').forEach(b => {
-    b.classList.toggle('active', b.dataset.density === density);
-  });
-  showToast('语音密度：' + (density === 'beat' ? '逐拍引导' : density === 'cycle' ? '每周期引导' : '仅阶段切换'));
 }
 
 function selectLevelForTraining(level) {
@@ -93,9 +83,6 @@ function syncPlanUI() {
   });
   document.querySelectorAll('.config-btn[data-sound]').forEach(b => {
     b.classList.toggle('active', b.dataset.sound === currentSoundMode);
-  });
-  document.querySelectorAll('.config-btn[data-density]').forEach(b => {
-    b.classList.toggle('active', b.dataset.density === currentVoiceDensity);
   });
   document.querySelectorAll('.phase-item').forEach(el => {
     const phase = parseInt(el.dataset.phase);
@@ -221,7 +208,6 @@ function saveCustomPlan() {
     scene: '自定义',
     modules: modules,
     defaultSound: currentSoundMode,
-    defaultVoice: currentVoiceDensity,
     levels: { custom: JSON.parse(JSON.stringify(customPlanDraft)) },
     isCustom: true
   };
