@@ -64,7 +64,22 @@ function toggleVibration() {
 // ==================== Service Worker ====================
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
+    navigator.serviceWorker.register('sw.js').then((reg) => {
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'activated' && !navigator.serviceWorker.controller) {
+            showToast('应用已更新，请刷新页面');
+          }
+        });
+      });
+    }).catch(() => {});
+  });
+
+  navigator.serviceWorker.addEventListener('message', (e) => {
+    if (e.data && e.data.type === 'SW_UPDATE') {
+      showToast('应用已更新，请刷新页面');
+    }
   });
 }
 
@@ -72,4 +87,16 @@ if ('serviceWorker' in navigator) {
 document.addEventListener('DOMContentLoaded', () => {
   refreshDashboard();
   populateSettings();
+  
+  const bottomNav = document.getElementById('bottomNav');
+  if (bottomNav) {
+    bottomNav.addEventListener('click', (e) => {
+      const navItem = e.target.closest('.nav-item');
+      if (navItem && navItem.dataset.page) {
+        e.preventDefault();
+        e.stopPropagation();
+        navigateTo(navItem.dataset.page);
+      }
+    });
+  }
 });
