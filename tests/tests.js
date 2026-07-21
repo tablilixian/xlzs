@@ -295,10 +295,42 @@ QUnit.module('Settings', function() {
   QUnit.test('loadSettings returns defaults when empty', function(assert) {
     localStorage.clear();
     const s = loadSettings();
-    assert.equal(s.level, 'beginner', 'default level');
-    assert.deepEqual(s.bpm, [30, 80, 25], 'default BPMs');
-    assert.deepEqual(s.duration, [5, 3, 4], 'default durations');
     assert.equal(s.soundEnabled, true, 'sound enabled by default');
+    assert.equal(s.vibDefault, false, 'vibration disabled by default');
+    assert.equal(s.voiceCoachEnabled, true, 'voice coach enabled by default');
+    assert.equal(s.vibIntensity, 2, 'vibration intensity default');
+    assert.ok(s.textPush, 'has push text');
+    assert.ok(s.textPull, 'has pull text');
+    assert.ok(s.textPause, 'has pause text');
+    assert.ok(s.textKegel, 'has kegel text');
+  });
+
+  QUnit.test('toggleSettingGroup toggles collapsed class', function(assert) {
+    const header = document.createElement('div');
+    const arrow = document.createElement('span');
+    arrow.className = 'setting-group-arrow';
+    arrow.textContent = '▼';
+    const title = document.createElement('span');
+    title.className = 'setting-group-title';
+    header.appendChild(title);
+    header.appendChild(arrow);
+    
+    const content = document.createElement('div');
+    content.className = 'setting-group-content';
+    
+    document.body.appendChild(header);
+    document.body.appendChild(content);
+
+    toggleSettingGroup(header);
+    assert.ok(content.classList.contains('collapsed'), 'content collapsed');
+    assert.equal(arrow.textContent, '▶', 'arrow points right');
+
+    toggleSettingGroup(header);
+    assert.ok(!content.classList.contains('collapsed'), 'content expanded');
+    assert.equal(arrow.textContent, '▼', 'arrow points down');
+
+    document.body.removeChild(header);
+    document.body.removeChild(content);
   });
 
   QUnit.test('DIFFICULTY_PRESETS have correct structure', function(assert) {

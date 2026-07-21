@@ -4,6 +4,7 @@ function loadSettings() {
 
 function stepperVal(id, delta) {
   const input = document.getElementById(id);
+  if (!input) return;
   let val = parseInt(input.value) || 0;
   val = Math.max(parseInt(input.min), Math.min(parseInt(input.max), val + delta));
   input.value = val;
@@ -12,24 +13,14 @@ function stepperVal(id, delta) {
 
 function saveSettings() {
   const s = loadSettings();
-  s.bpm = [
-    parseInt(document.getElementById('setBpm1').value) || 30,
-    parseInt(document.getElementById('setBpm2').value) || 80,
-    parseInt(document.getElementById('setBpm3').value) || 25
-  ];
-  s.duration = [
-    parseInt(document.getElementById('setDur1').value) || 5,
-    parseInt(document.getElementById('setDur2').value) || 3,
-    parseInt(document.getElementById('setDur3').value) || 4
-  ];
-  s.sprintSec = parseInt(document.getElementById('setSprint').value) || 10;
-  s.restSec = parseInt(document.getElementById('setRest').value) || 20;
   s.textPush = document.getElementById('setTextPush').value || DEFAULT_SETTINGS.textPush;
   s.textPull = document.getElementById('setTextPull').value || DEFAULT_SETTINGS.textPull;
   s.textPause = document.getElementById('setTextPause').value || DEFAULT_SETTINGS.textPause;
   s.textKegel = document.getElementById('setTextKegel').value || DEFAULT_SETTINGS.textKegel;
   s.soundEnabled = document.getElementById('toggleSound').classList.contains('on');
   s.vibDefault = document.getElementById('toggleVibDefault').classList.contains('on');
+  s.voiceCoachEnabled = document.getElementById('toggleVoiceCoach').classList.contains('on');
+  s.vibIntensity = parseInt(document.getElementById('setVibIntensity').value) || 2;
 
   VOICE_PROMPTS.forEach(p => {
     const toggleEl = document.getElementById('vp_toggle_' + p.key);
@@ -42,47 +33,44 @@ function saveSettings() {
   showToast('设置已保存');
 }
 
-function applyLevelPreset(level) {
-  const preset = DIFFICULTY_PRESETS[level];
-  if (!preset) return;
-  const s = loadSettings();
-  s.level = level;
-  s.bpm = [preset.phase1.bpm, preset.phase2.bpm, preset.phase3.bpm];
-  s.duration = [preset.phase1.duration, preset.phase2.duration, preset.phase3.duration];
-  s.sprintSec = preset.phase2.sprintSec;
-  s.restSec = preset.phase2.restSec;
-  Storage.set('settings', s);
-  populateSettings();
-  showToast('已切换至' + preset.name + '模式');
+function toggleSettingGroup(header) {
+  const content = header.nextElementSibling;
+  const arrow = header.querySelector('.setting-group-arrow');
+  if (content.classList.contains('collapsed')) {
+    content.classList.remove('collapsed');
+    arrow.textContent = '▼';
+  } else {
+    content.classList.add('collapsed');
+    arrow.textContent = '▶';
+  }
 }
 
-function selectLevel(level) {
-  document.querySelectorAll('.level-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.level === level);
-  });
-  applyLevelPreset(level);
+function resetSettings() {
+  if (!confirm('确定要恢复所有设置为默认值吗？训练数据不会受到影响。')) return;
+  
+  Storage.set('settings', { ...DEFAULT_SETTINGS });
+  populateSettings();
+  showToast('设置已恢复默认值');
 }
 
 function populateSettings() {
   const s = loadSettings();
-  document.getElementById('setBpm1').value = s.bpm[0];
-  document.getElementById('setBpm2').value = s.bpm[1];
-  document.getElementById('setBpm3').value = s.bpm[2];
-  document.getElementById('setDur1').value = s.duration[0];
-  document.getElementById('setDur2').value = s.duration[1];
-  document.getElementById('setDur3').value = s.duration[2];
-  document.getElementById('setSprint').value = s.sprintSec;
-  document.getElementById('setRest').value = s.restSec;
-  document.getElementById('setTextPush').value = s.textPush;
-  document.getElementById('setTextPull').value = s.textPull;
-  document.getElementById('setTextPause').value = s.textPause;
-  document.getElementById('setTextKegel').value = s.textKegel;
-  document.getElementById('toggleSound').classList.toggle('on', s.soundEnabled);
-  document.getElementById('toggleVibDefault').classList.toggle('on', s.vibDefault);
-
-  document.querySelectorAll('.level-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.level === s.level);
-  });
+  const pushEl = document.getElementById('setTextPush');
+  if (pushEl) pushEl.value = s.textPush || DEFAULT_SETTINGS.textPush;
+  const pullEl = document.getElementById('setTextPull');
+  if (pullEl) pullEl.value = s.textPull || DEFAULT_SETTINGS.textPull;
+  const pauseEl = document.getElementById('setTextPause');
+  if (pauseEl) pauseEl.value = s.textPause || DEFAULT_SETTINGS.textPause;
+  const kegelEl = document.getElementById('setTextKegel');
+  if (kegelEl) kegelEl.value = s.textKegel || DEFAULT_SETTINGS.textKegel;
+  const soundEl = document.getElementById('toggleSound');
+  if (soundEl) soundEl.classList.toggle('on', s.soundEnabled !== false);
+  const vibDefaultEl = document.getElementById('toggleVibDefault');
+  if (vibDefaultEl) vibDefaultEl.classList.toggle('on', s.vibDefault);
+  const voiceCoachEl = document.getElementById('toggleVoiceCoach');
+  if (voiceCoachEl) voiceCoachEl.classList.toggle('on', s.voiceCoachEnabled !== false);
+  const vibIntensityEl = document.getElementById('setVibIntensity');
+  if (vibIntensityEl) vibIntensityEl.value = s.vibIntensity || 2;
 
   renderVoicePrompts();
 }

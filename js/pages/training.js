@@ -62,11 +62,7 @@ function selectVoiceDensity(density) {
 }
 
 function selectLevelForTraining(level) {
-  document.querySelectorAll('#levelSelector .config-btn[data-level]').forEach(b => {
-    b.classList.toggle('active', b.dataset.level === level);
-  });
-  applyLevelPreset(level);
-  updateTrainingUI();
+  selectPlanLevel(level);
 }
 
 function renderPlanCards() {

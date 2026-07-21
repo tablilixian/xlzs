@@ -9,6 +9,8 @@ const DEFAULT_SETTINGS = {
   textKegel: '收紧PC肌，保持收缩',
   soundEnabled: true,
   vibDefault: false,
+  voiceCoachEnabled: true,
+  vibIntensity: 2,
   level: 'beginner',
   voiceOn: {
     coachOpen: true,
