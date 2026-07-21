@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pillow-trainer-v4';
+const CACHE_NAME = 'pillow-trainer-v5';
 const ASSETS = [
   './',
   './index.html',
@@ -17,13 +17,50 @@ const ASSETS = [
   './js/pages/training.js',
   './js/pages/knowledge.js',
   './js/pages/analysis.js',
-  './js/app.js'
+  './js/app.js',
+  './sounds/beep_01.ogg',
+  './sounds/beep_02.ogg',
+  './sounds/beep_03.ogg',
+  './sounds/retro_beep_01.ogg',
+  './sounds/retro_beep_02.ogg',
+  './sounds/retro_beep_03.ogg',
+  './sounds/bell_01.ogg',
+  './sounds/bell_02.ogg',
+  './sounds/bell_03.ogg',
+];
+
+const VOICE_FILES = [
+  './sounds/voices/coachOpen.mp3',
+  './sounds/voices/testVoice.mp3',
+  './sounds/voices/pause.mp3',
+  './sounds/voices/complete.mp3',
+  './sounds/voices/start.mp3',
+  './sounds/voices/emergency.mp3',
+  './sounds/voices/restart.mp3',
+  './sounds/voices/phaseChange1.mp3',
+  './sounds/voices/phaseChange2.mp3',
+  './sounds/voices/phaseChange3.mp3',
+  './sounds/voices/phase1_push.mp3',
+  './sounds/voices/phase1_push2.mp3',
+  './sounds/voices/phase1_stop.mp3',
+  './sounds/voices/phase1_pull.mp3',
+  './sounds/voices/phase1_pull2.mp3',
+  './sounds/voices/phase1_entry.mp3',
+  './sounds/voices/phase2_sprint.mp3',
+  './sounds/voices/phase2_rest.mp3',
+  './sounds/voices/phase3_push.mp3',
+  './sounds/voices/phase3_hold.mp3',
+  './sounds/voices/phase3_pull.mp3',
+  './sounds/voices/breath_inhale.mp3',
+  './sounds/voices/breath_hold.mp3',
+  './sounds/voices/breath_exhale.mp3',
+  './sounds/voices/arousal_guide.mp3',
 ];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
+      return cache.addAll(ASSETS.concat(VOICE_FILES));
     })
   );
   self.skipWaiting();

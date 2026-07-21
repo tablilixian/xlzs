@@ -20,6 +20,7 @@ function saveSettings() {
   s.soundEnabled = document.getElementById('toggleSound').classList.contains('on');
   s.vibDefault = document.getElementById('toggleVibDefault').classList.contains('on');
   s.voiceCoachEnabled = document.getElementById('toggleVoiceCoach').classList.contains('on');
+  s.voiceSpeed = parseFloat(document.getElementById('setVoiceSpeed').value) || 1.0;
   s.vibIntensity = parseInt(document.getElementById('setVibIntensity').value) || 2;
 
   VOICE_PROMPTS.forEach(p => {
@@ -69,6 +70,8 @@ function populateSettings() {
   if (vibDefaultEl) vibDefaultEl.classList.toggle('on', s.vibDefault);
   const voiceCoachEl = document.getElementById('toggleVoiceCoach');
   if (voiceCoachEl) voiceCoachEl.classList.toggle('on', s.voiceCoachEnabled !== false);
+  const voiceSpeedEl = document.getElementById('setVoiceSpeed');
+  if (voiceSpeedEl) voiceSpeedEl.value = s.voiceSpeed !== undefined ? s.voiceSpeed : 1.0;
   const vibIntensityEl = document.getElementById('setVibIntensity');
   if (vibIntensityEl) vibIntensityEl.value = s.vibIntensity || 2;
 

@@ -10,6 +10,7 @@ const DEFAULT_SETTINGS = {
   soundEnabled: true,
   vibDefault: false,
   voiceCoachEnabled: true,
+  voiceSpeed: 1.0,
   vibIntensity: 2,
   level: 'beginner',
   voiceOn: {
@@ -175,11 +176,13 @@ const TRAINING_PLANS = {
 const VOICE_PROMPTS = [
   { key: 'coachOpen',    name: '开启语音教练',     defaultText: '语音教练已开启',   trigger: '点击语音教练按钮' },
   { key: 'testVoice',    name: '语音测试',         defaultText: '测试语音，你好，欢迎使用训练助手', trigger: '设置页测试按钮' },
+  { key: 'arousal',      name: '唤醒引导',         defaultText: '闭上眼睛，深呼吸，专注于身体的感觉，不用着急，准备好了再继续。', trigger: '唤醒准备阶段每10秒' },
   { key: 'pause',        name: '训练暂停',         defaultText: '训练暂停',          trigger: '点击暂停按钮' },
   { key: 'complete',     name: '训练完成',         defaultText: '恭喜，训练完成',    trigger: '三阶段训练全部结束' },
   { key: 'start',        name: '训练开始',         defaultText: '训练开始，热身阶段', trigger: '点击开始训练' },
   { key: 'phaseChange',  name: '阶段切换',         defaultText: '进入{X}阶段',      trigger: '阶段一→二、二→三切换时' },
   { key: 'phase1Beat',   name: '热身阶段节拍引导', defaultText: '匀速推入',          trigger: '阶段一每循环第1拍' },
+  { key: 'phase2Beat',   name: '爆发阶段节拍引导', defaultText: '全力冲刺',          trigger: '阶段二冲刺/休息开始时' },
   { key: 'phase3Beat',   name: '控制阶段节拍引导', defaultText: '推入+凯格尔',      trigger: '阶段三每循环第1拍' },
   { key: 'emergency',    name: '紧急刹车',         defaultText: '紧急刹车，开始冷却', trigger: '点击一键控射暂停' },
   { key: 'restart',      name: '冷却后重启',       defaultText: '重新开始，回到热身阶段', trigger: '冷却倒计时结束' },

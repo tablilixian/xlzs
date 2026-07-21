@@ -1,9 +1,21 @@
 let audioCtx = null;
+let phase1Osc = null;
+let phase1Gain = null;
 
 function ensureAudioCtx() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   if (audioCtx.state === 'suspended') audioCtx.resume();
   return audioCtx;
+}
+
+function playSound(filePath) {
+  const settings = loadSettings();
+  if (!settings.soundEnabled) return;
+  try {
+    const audio = new Audio(`sounds/${filePath}`);
+    audio.volume = 0.3;
+    audio.play().catch(() => {});
+  } catch (e) {}
 }
 
 function playTick(freq, duration) {
@@ -25,30 +37,15 @@ function playTick(freq, duration) {
 }
 
 function playPhaseChange() {
-  playTick(600, 0.1);
-  setTimeout(() => playTick(900, 0.1), 120);
-  setTimeout(() => playTick(1200, 0.15), 240);
+  playSound('retro_beep_01.ogg');
+  setTimeout(() => playSound('retro_beep_02.ogg'), 120);
+  setTimeout(() => playSound('retro_beep_03.ogg'), 240);
 }
 
-// Short bell-like "ding" for stop beats
 function playStopDing(freq) {
-  try {
-    const ctx = ensureAudioCtx();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.value = freq;
-    gain.gain.setValueAtTime(0, ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + 0.4);
-  } catch(e) {}
+  playSound('bell_01.ogg');
 }
 
-// ===== Pre-Arousal breathing guide sound =====
 function playBreathGuideSound(phase) {
   const settings = loadSettings();
   if (!settings.soundEnabled) return;
@@ -78,10 +75,6 @@ function playBreathGuideSound(phase) {
     osc.stop(ctx.currentTime + 0.4);
   } catch(e) {}
 }
-
-// ===== Phase 1 continuous oscillator =====
-let phase1Osc = null;
-let phase1Gain = null;
 
 function stopPhase1Osc() {
   if (phase1Osc && phase1Gain) {

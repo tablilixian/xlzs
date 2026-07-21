@@ -75,10 +75,10 @@ function getPlanPhaseStates(phaseNum) {
     return [
       null,
       { text: '匀速推入',   sub: '缓慢到底，吸气配合', color: 'var(--accent)' },
-      { text: '匀速推入',   sub: '继续深入，保持节奏', color: 'var(--accent)' },
+      { text: '继续深入',   sub: '继续深入，保持节奏', color: 'var(--accent)' },
       { text: '深处停止',   sub: '保持不动，深呼吸',   color: '#4A9EFF' },
       { text: '匀速抽出',   sub: '缓慢退至入口，呼气', color: 'var(--success)' },
-      { text: '匀速抽出',   sub: '继续退出，放松身体', color: 'var(--success)' },
+      { text: '继续退出',   sub: '继续退出，放松身体', color: 'var(--success)' },
       { text: '入口停止',   sub: '保持不动，深呼吸',   color: '#4A9EFF' },
     ];
   }
@@ -176,7 +176,7 @@ function stopTraining(completed) {
   clearInterval(trainingState.countdownTimer);
   stopPhase1Osc();
   vibrateOff();
-  speechSynthesis.cancel();
+  stopSpeaking();
   releaseWakeLock();
 
   document.getElementById('emergencyBtn').style.display = 'none';
@@ -242,7 +242,7 @@ function startPhase(phase) {
 
   if (prevPhase > 0 && prevPhase !== phase) {
     playPhaseChange();
-    if (shouldSpeak('phase')) speak(getVoiceText('phaseChange', '进入' + getPhaseName(phase) + '阶段'), 'phaseChange');
+    if (shouldSpeak('phase')) speak(getVoiceText('phaseChange', '进入' + getPhaseName(phase) + '阶段'), 'phaseChange', phase);
   } else {
     if (shouldSpeak('phase')) speak(getVoiceText('start', '训练开始，' + getPhaseName(phase) + '阶段'), 'start');
   }
@@ -521,7 +521,7 @@ function emergencyStop() {
   clearInterval(trainingState.countdownTimer);
   stopPhase1Osc();
   vibrateOff();
-  speechSynthesis.cancel();
+  stopSpeaking();
   trainingState.isPaused = true;
   trainingState.failureCount = (trainingState.failureCount || 0) + 1;
   trainingState._emergencyPhase = trainingState.currentPhase;

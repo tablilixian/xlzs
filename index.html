@@ -422,6 +422,15 @@
           <label>语音教练开关</label>
           <button class="toggle on" id="toggleVoiceCoach" onclick="toggleSettingSwitch(this)"></button>
         </div>
+        <div class="setting-item" style="flex-direction:column;align-items:flex-start">
+          <label>语音速度</label>
+          <div style="width:100%;display:flex;align-items:center;margin-top:0.5rem">
+            <span style="font-size:0.7rem;color:var(--muted)">0.5x</span>
+            <input type="range" id="setVoiceSpeed" min="0.5" max="2.0" step="0.1" value="1.0" oninput="document.getElementById('voiceSpeedDisplay').textContent = this.value + 'x'; saveSettings()" style="flex:1;margin:0 0.5rem">
+            <span style="font-size:0.7rem;color:var(--muted)">2.0x</span>
+          </div>
+          <div style="font-size:0.8rem;color:var(--accent);margin-top:0.25rem" id="voiceSpeedDisplay">1.0x</div>
+        </div>
         <div class="setting-item stepper-row">
           <label>震动强度</label>
           <div class="stepper"><button onclick="stepperVal('setVibIntensity',-1)" class="stepper-btn">−</button><input type="number" id="setVibIntensity" min="1" max="3" value="2" onchange="saveSettings()"><button onclick="stepperVal('setVibIntensity',1)" class="stepper-btn">+</button></div>
