@@ -1,5 +1,5 @@
 function getPhaseName(n) {
-  return ['', '热身', '爆发', '控制'][n] || '';
+  return ['唤醒', '热身', '爆发', '控制'][n] || '';
 }
 
 function updateMiniBeatRing(currentBeat) {
@@ -33,12 +33,20 @@ function updateMiniBeatRing(currentBeat) {
 }
 
 function updatePhaseBar(prevPhase) {
-  const mods = trainingState._planModules || [1, 2, 3];
+  const mods = trainingState._planModules || [0, 1, 2, 3];
   const planData = trainingState._planData;
   const phaseBpmIds = { 1: 'phase1bpm', 2: 'phase2bpm', 3: 'phase3bpm' };
-  for (let i = 1; i <= 3; i++) {
+  
+  for (let i = 0; i <= 3; i++) {
     const el = document.querySelector('[data-phase="' + i + '"]');
     if (!el) continue;
+    if (i === 0) {
+      el.style.display = '';
+      el.classList.remove('active', 'completed');
+      if (trainingState.currentPhase === 0) el.classList.add('active');
+      else if (trainingState.currentPhase > 0) el.classList.add('completed');
+      continue;
+    }
     const inPlan = mods.includes(i);
     el.style.display = inPlan ? '' : 'none';
     if (!inPlan) continue;
@@ -63,23 +71,32 @@ function updateRingProgress() {
 }
 
 function updateStartButton() {
-  const btn = document.getElementById('btnStartTraining');
-  const stopBtn = document.getElementById('btnStopTraining');
+  const setupBtn = document.getElementById('btnStartTraining');
+  const setupStopBtn = document.getElementById('btnStopTraining');
+  const activeBtn = document.getElementById('btnActiveStartTraining');
+  const activeStopBtn = document.getElementById('btnActiveStopTraining');
   const exitBtn = document.getElementById('btnExitTraining');
+  
   if (!trainingState.isRunning) {
-    btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> 开始训练';
-    btn.className = 'btn btn-primary btn-full btn-large';
-    stopBtn.style.display = 'none';
+    if (setupBtn) {
+      setupBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> 开始训练';
+      setupBtn.className = 'btn btn-primary btn-full btn-large';
+    }
+    if (setupStopBtn) setupStopBtn.style.display = 'none';
     if (exitBtn) exitBtn.style.display = 'none';
   } else if (trainingState.isPaused) {
-    btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> 继续训练';
-    btn.className = 'btn btn-primary btn-full btn-large';
-    stopBtn.style.display = '';
+    if (activeBtn) {
+      activeBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> 继续训练';
+      activeBtn.className = 'btn btn-primary btn-full btn-large';
+    }
+    if (activeStopBtn) activeStopBtn.style.display = '';
     if (exitBtn) exitBtn.style.display = '';
   } else {
-    btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg> 暂停训练';
-    btn.className = 'btn btn-ghost btn-full btn-large';
-    stopBtn.style.display = 'none';
+    if (activeBtn) {
+      activeBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg> 暂停训练';
+      activeBtn.className = 'btn btn-ghost btn-full btn-large';
+    }
+    if (activeStopBtn) activeStopBtn.style.display = 'none';
     if (exitBtn) exitBtn.style.display = 'none';
   }
 }
@@ -95,12 +112,12 @@ function updateTrainingUI() {
     document.getElementById('ringSub').textContent = '准备就绪';
     document.getElementById('ringProgress').style.strokeDashoffset = 0;
     document.getElementById('miniBeatDots').style.display = 'none';
-    document.getElementById('planSelector').style.display = '';
-    document.getElementById('levelSelector').style.display = '';
-    for (let i = 1; i <= 3; i++) {
+    
+    for (let i = 0; i <= 3; i++) {
       const el = document.querySelector('[data-phase="' + i + '"]');
       if (el) el.classList.remove('active', 'completed');
     }
+    
     const planData = getPlanLevelData(currentPlan, currentPlanLevel);
     const plan = TRAINING_PLANS[currentPlan];
     const mods = plan ? plan.modules : [1, 2, 3];
@@ -115,4 +132,16 @@ function updateTrainingUI() {
       }
     }
   }
+}
+
+function showTrainingSetup() {
+  document.getElementById('trainingSetup').style.display = 'block';
+  document.getElementById('trainingActive').style.display = 'none';
+  document.getElementById('bottomNav').style.display = '';
+}
+
+function showTrainingActive() {
+  document.getElementById('trainingSetup').style.display = 'none';
+  document.getElementById('trainingActive').style.display = 'block';
+  document.getElementById('bottomNav').style.display = 'none';
 }

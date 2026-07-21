@@ -40,13 +40,17 @@
       <div class="card-title"><span class="icon">&#9733;</span> 本周打卡</div>
       <div class="week-dots" id="weekDots"></div>
     </div>
-    <div class="card" style="margin-top:1rem;text-align:center">
-      <div class="start-icon">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E6A817" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+    <div class="card start-card">
+      <div class="start-card-header">
+        <div class="start-icon" id="dashStartIcon">🏋️</div>
+        <div class="start-info">
+          <div class="start-title" id="dashStartTitle">今日推荐：完整训练</div>
+          <div class="start-sub" id="dashStartSub">中级 · 14分钟</div>
+        </div>
       </div>
-      <h2 style="font-size:1.1rem;margin-bottom:0.25rem">准备好了吗？<span class="level-badge" id="dashLevelBadge">中级</span></h2>
-      <p style="font-size:0.85rem;margin-bottom:1rem;color:var(--muted)">专注呼吸，跟随节奏，享受训练</p>
+      <div class="start-hint" id="dashStartHint">专注呼吸，跟随节奏，享受训练</div>
       <button class="btn btn-primary btn-large btn-full" onclick="navigateTo('training')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
         开始训练
       </button>
     </div>
@@ -54,155 +58,194 @@
 
   <!-- ==================== Page: Training Room ==================== -->
   <div class="page" id="page-training">
-    <div class="training-header">
-      <h2 id="trainingStatus">准备开始</h2>
-    </div>
+    <!-- ===== Setup State (设置状态) ===== -->
+    <div id="trainingSetup">
+      <div class="training-header">
+        <h2>🎯 训练室</h2>
+        <p>专注训练，持续精进</p>
+      </div>
 
-    <!-- ===== Arousal Prep Block (Phase 0) ===== -->
-    <div id="preArousalBlock">
-      <div class="arousal-card">
-        <h3>🧘 唤醒准备</h3>
-        <div class="guidance">
-          闭眼，戴耳机，听呼吸引导。<br>
-          <strong>不急</strong>，用手或道具轻柔刺激，<br>
-          目标不是"最硬"，而是<strong>"感觉来了"</strong>（约70%硬度）。
+      <!-- Plan Selector -->
+      <div class="plan-selector" id="planSelector">
+        <div class="plan-selector-header">
+          <span class="plan-selector-label">选择计划</span>
+          <span class="plan-selector-custom" onclick="openCustomPanel()">✏️ 自定义</span>
         </div>
+        <div class="plan-cards-wrapper"><div class="plan-cards" id="planCards"></div></div>
+      </div>
 
-        <!-- State 1: before user starts -->
-        <div id="arousalStartState">
-          <button class="btn btn-primary btn-large btn-full" onclick="startArousalSession()">
-            ▶ 开始唤醒
-          </button>
-          <div class="arousal-skip" onclick="onArousalSkip()">跳过唤醒，直接开始</div>
-        </div>
-
-        <!-- State 2: active breathing -->
-        <div id="arousalActiveState" style="display:none">
-          <div class="breath-ring-wrapper">
-            <div class="breath-ring" id="breathRing"></div>
-            <div class="breath-phase-text" id="breathPhaseText">🧘 准备</div>
+      <!-- Plan Detail -->
+      <div class="card plan-detail-card" id="planDetailCard">
+        <div class="plan-detail-header">
+          <div class="plan-detail-icon" id="planDetailIcon">🏋️</div>
+          <div class="plan-detail-info">
+            <div class="plan-detail-name" id="planDetailName">完整训练</div>
+            <div class="plan-detail-desc" id="planDetailDesc">三阶段全流程，全面能力提升</div>
           </div>
-          <button class="btn btn-primary btn-large btn-full" id="btnReady" onclick="onArousalReady()" disabled>
-            🌱 已唤醒，开始节拍训练
-          </button>
-          <div class="arousal-skip" onclick="onArousalSkip()">跳过唤醒，直接开始</div>
         </div>
+        <div class="plan-detail-scene" id="planDetailScene">适用场景：状态好，有完整时间</div>
+        <div class="plan-detail-phases" id="planDetailPhases"></div>
       </div>
-    </div>
 
-    <!-- Plan Selector -->
-    <div class="plan-selector" id="planSelector">
-      <div class="plan-selector-header">
-        <span class="plan-selector-label">选择计划</span>
-        <span class="plan-selector-custom" onclick="openCustomPanel()">✏️ 自定义</span>
-      </div>
-      <div class="plan-cards-wrapper"><div class="plan-cards" id="planCards"></div></div>
-    </div>
-    <!-- Phase Bar -->
-    <div class="phase-bar" id="phaseBar">
-      <div class="phase-item" data-phase="1">
-        <span class="phase-label">热身</span>
-        <span class="phase-bpm" id="phase1bpm">30 BPM</span>
-      </div>
-      <div class="phase-item" data-phase="2">
-        <span class="phase-label">爆发</span>
-        <span class="phase-bpm" id="phase2bpm">80 BPM</span>
-      </div>
-      <div class="phase-item" data-phase="3">
-        <span class="phase-label">控制</span>
-        <span class="phase-bpm" id="phase3bpm">25 BPM</span>
-      </div>
-    </div>
-    <div class="interval-indicator" id="intervalIndicator" style="display:none"></div>
-    <div class="ring-container">
-      <div class="progress-ring">
-        <svg viewBox="0 0 200 200">
-          <circle class="ring-bg" cx="100" cy="100" r="88"></circle>
-          <circle class="ring-progress" id="ringProgress" cx="100" cy="100" r="88"
-            stroke-dasharray="553" stroke-dashoffset="0"></circle>
-        </svg>
-        <div class="ring-center">
-          <div class="ring-time" id="ringTime">0:00</div>
-          <div class="ring-sub" id="ringSub">准备就绪</div>
-          <div class="mini-beat-dots" id="miniBeatDots" style="display:none">
-            <div class="mini-beat-dot" data-beat="1"></div>
-            <div class="mini-beat-dot" data-beat="2"></div>
-            <div class="mini-beat-dot" data-beat="3"></div>
-            <div class="mini-beat-dot" data-beat="4"></div>
-            <div class="mini-beat-dot" data-beat="5"></div>
-            <div class="mini-beat-dot" data-beat="6"></div>
+      <!-- Training Config Card -->
+      <div class="card training-config" id="levelSelector">
+        <div class="card-title"><span class="icon">⚙️</span> 训练配置</div>
+        <div class="config-section">
+          <div class="config-label">难度等级</div>
+          <div class="config-options" data-group="level">
+            <button class="config-btn" data-level="beginner" onclick="selectPlanLevel('beginner')">
+              <span class="config-btn-label">初级</span>
+              <span class="config-btn-desc">节奏舒缓</span>
+            </button>
+            <button class="config-btn active" data-level="intermediate" onclick="selectPlanLevel('intermediate')">
+              <span class="config-btn-label">中级</span>
+              <span class="config-btn-desc">标准训练</span>
+            </button>
+            <button class="config-btn" data-level="advanced" onclick="selectPlanLevel('advanced')">
+              <span class="config-btn-label">高级</span>
+              <span class="config-btn-desc">挑战极限</span>
+            </button>
+          </div>
+        </div>
+        <div class="config-section">
+          <div class="config-label">节拍音色</div>
+          <div class="config-options" data-group="sound">
+            <button class="config-btn config-btn-sm" data-sound="hum" onclick="selectPlanSound('hum')">🎵 嗡嗡声</button>
+            <button class="config-btn config-btn-sm" data-sound="tick" onclick="selectPlanSound('tick')">🔔 节拍器</button>
+            <button class="config-btn config-btn-sm active" data-sound="mixed" onclick="selectPlanSound('mixed')">🔄 混合</button>
+          </div>
+        </div>
+        <div class="config-section">
+          <div class="config-label">语音密度</div>
+          <div class="config-options" data-group="density">
+            <button class="config-btn config-btn-sm" data-density="beat" onclick="selectVoiceDensity('beat')">逐拍</button>
+            <button class="config-btn config-btn-sm active" data-density="cycle" onclick="selectVoiceDensity('cycle')">每周期</button>
+            <button class="config-btn config-btn-sm" data-density="minimal" onclick="selectVoiceDensity('minimal')">极简</button>
           </div>
         </div>
       </div>
-    </div>
-    <div class="instruction-box" id="instructionBox">
-      <div class="instruction-text" id="instructionText">按下开始，进入训练</div>
-      <div class="instruction-sub" id="instructionSub">跟随节拍器，配合呼吸</div>
-    </div>
-    <!-- Training Config Card -->
-    <div class="card training-config" id="levelSelector">
-      <div class="card-title"><span class="icon">⚙️</span> 训练配置</div>
-      <div class="config-section">
-        <div class="config-label">难度等级</div>
-        <div class="config-options" data-group="level">
-          <button class="config-btn" data-level="beginner" onclick="selectPlanLevel('beginner')">
-            <span class="config-btn-label">初级</span>
-            <span class="config-btn-desc">节奏舒缓</span>
-          </button>
-          <button class="config-btn active" data-level="intermediate" onclick="selectPlanLevel('intermediate')">
-            <span class="config-btn-label">中级</span>
-            <span class="config-btn-desc">标准训练</span>
-          </button>
-          <button class="config-btn" data-level="advanced" onclick="selectPlanLevel('advanced')">
-            <span class="config-btn-label">高级</span>
-            <span class="config-btn-desc">挑战极限</span>
-          </button>
-        </div>
-      </div>
-      <div class="config-section">
-        <div class="config-label">节拍音色</div>
-        <div class="config-options" data-group="sound">
-          <button class="config-btn config-btn-sm" data-sound="hum" onclick="selectPlanSound('hum')">🎵 嗡嗡声</button>
-          <button class="config-btn config-btn-sm" data-sound="tick" onclick="selectPlanSound('tick')">🔔 节拍器</button>
-          <button class="config-btn config-btn-sm active" data-sound="mixed" onclick="selectPlanSound('mixed')">🔄 混合</button>
-        </div>
-      </div>
-      <div class="config-section">
-        <div class="config-label">语音密度</div>
-        <div class="config-options" data-group="density">
-          <button class="config-btn config-btn-sm" data-density="beat" onclick="selectVoiceDensity('beat')">逐拍</button>
-          <button class="config-btn config-btn-sm active" data-density="cycle" onclick="selectVoiceDensity('cycle')">每周期</button>
-          <button class="config-btn config-btn-sm" data-density="minimal" onclick="selectVoiceDensity('minimal')">极简</button>
-        </div>
+
+      <div class="controls" id="trainingControls">
+        <button class="btn btn-primary btn-full btn-large" id="btnStartTraining" onclick="toggleTraining()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          开始训练
+        </button>
       </div>
     </div>
-    <div class="controls" id="trainingControls">
-      <button class="btn btn-primary btn-full btn-large" id="btnStartTraining" onclick="toggleTraining()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-        开始训练
+
+    <!-- ===== Active State (活跃状态) ===== -->
+    <div id="trainingActive" style="display:none">
+      <div class="training-header">
+        <h2 id="trainingStatus">准备开始</h2>
+      </div>
+
+      <!-- Phase Bar -->
+      <div class="phase-bar" id="phaseBar">
+        <div class="phase-item" data-phase="0">
+          <span class="phase-label">唤醒</span>
+          <span class="phase-bpm">准备</span>
+        </div>
+        <div class="phase-item" data-phase="1">
+          <span class="phase-label">热身</span>
+          <span class="phase-bpm" id="phase1bpm">30 BPM</span>
+        </div>
+        <div class="phase-item" data-phase="2">
+          <span class="phase-label">爆发</span>
+          <span class="phase-bpm" id="phase2bpm">80 BPM</span>
+        </div>
+        <div class="phase-item" data-phase="3">
+          <span class="phase-label">控制</span>
+          <span class="phase-bpm" id="phase3bpm">25 BPM</span>
+        </div>
+      </div>
+
+      <!-- ===== Arousal Prep Block (Phase 0) ===== -->
+      <div id="preArousalBlock">
+        <div class="arousal-card">
+          <h3>🧘 唤醒准备</h3>
+          <div class="guidance">
+            闭眼，戴耳机，听呼吸引导。<br>
+            <strong>不急</strong>，用手或道具轻柔刺激，<br>
+            目标不是"最硬"，而是<strong>"感觉来了"</strong>（约70%硬度）。
+          </div>
+
+          <!-- State 1: before user starts -->
+          <div id="arousalStartState">
+            <button class="btn btn-primary btn-large btn-full" onclick="startArousalSession()">
+              ▶ 开始唤醒
+            </button>
+            <div class="arousal-skip" onclick="onArousalSkip()">跳过唤醒，直接开始</div>
+          </div>
+
+          <!-- State 2: active breathing -->
+          <div id="arousalActiveState" style="display:none">
+            <div class="breath-ring-wrapper">
+              <div class="breath-ring" id="breathRing"></div>
+              <div class="breath-phase-text" id="breathPhaseText">🧘 准备</div>
+            </div>
+            <button class="btn btn-primary btn-large btn-full" id="btnReady" onclick="onArousalReady()" disabled>
+              🌱 已唤醒，开始节拍训练
+            </button>
+            <div class="arousal-skip" onclick="onArousalSkip()">跳过唤醒，直接开始</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="interval-indicator" id="intervalIndicator" style="display:none"></div>
+      <div class="ring-container">
+        <div class="progress-ring">
+          <svg viewBox="0 0 200 200">
+            <circle class="ring-bg" cx="100" cy="100" r="88"></circle>
+            <circle class="ring-progress" id="ringProgress" cx="100" cy="100" r="88"
+              stroke-dasharray="553" stroke-dashoffset="0"></circle>
+          </svg>
+          <div class="ring-center">
+            <div class="ring-time" id="ringTime">0:00</div>
+            <div class="ring-sub" id="ringSub">准备就绪</div>
+            <div class="mini-beat-dots" id="miniBeatDots" style="display:none">
+              <div class="mini-beat-dot" data-beat="1"></div>
+              <div class="mini-beat-dot" data-beat="2"></div>
+              <div class="mini-beat-dot" data-beat="3"></div>
+              <div class="mini-beat-dot" data-beat="4"></div>
+              <div class="mini-beat-dot" data-beat="5"></div>
+              <div class="mini-beat-dot" data-beat="6"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="instruction-box" id="instructionBox">
+        <div class="instruction-text" id="instructionText">按下开始，进入训练</div>
+        <div class="instruction-sub" id="instructionSub">跟随节拍器，配合呼吸</div>
+      </div>
+
+      <div class="controls" id="trainingActiveControls">
+        <button class="btn btn-primary btn-full btn-large" id="btnActiveStartTraining" onclick="toggleTraining()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          开始训练
+        </button>
+        <button class="btn btn-ghost btn-full btn-large" id="btnActiveStopTraining" onclick="stopTraining(false)" style="display:none">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"></rect></svg>
+          停止训练
+        </button>
+      </div>
+      <div class="controls" id="extraControls" style="display:none">
+        <button class="btn btn-ghost btn-full" onclick="toggleVoiceCoach()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
+          <span id="voiceBtnText">语音教练</span>
+        </button>
+        <button class="btn btn-ghost btn-full" onclick="toggleVibration()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h4l3-9 4 18 3-9h6"></path></svg>
+          <span id="vibBtnText">震动模式</span>
+        </button>
+      </div>
+      <button class="emergency-stop" id="emergencyBtn" style="display:none" onclick="emergencyStop()">
+        一键控射暂停
       </button>
-      <button class="btn btn-ghost btn-full btn-large" id="btnStopTraining" onclick="stopTraining(false)" style="display:none">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"></rect></svg>
-        停止训练
+      <button class="btn btn-ghost btn-full" id="btnExitTraining" style="display:none;margin-top:0.5rem" onclick="showExitConfirm()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        退出训练
       </button>
     </div>
-    <div class="controls" id="extraControls" style="display:none">
-      <button class="btn btn-ghost btn-full" onclick="toggleVoiceCoach()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
-        <span id="voiceBtnText">语音教练</span>
-      </button>
-      <button class="btn btn-ghost btn-full" onclick="toggleVibration()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h4l3-9 4 18 3-9h6"></path></svg>
-        <span id="vibBtnText">震动模式</span>
-      </button>
-    </div>
-    <button class="emergency-stop" id="emergencyBtn" style="display:none" onclick="emergencyStop()">
-      一键控射暂停
-    </button>
-    <button class="btn btn-ghost btn-full" id="btnExitTraining" style="display:none;margin-top:0.5rem" onclick="showExitConfirm()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-      退出训练
-    </button>
   </div>
 
   <!-- ==================== Custom Plan Panel ==================== -->

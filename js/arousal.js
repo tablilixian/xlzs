@@ -55,13 +55,27 @@ function onArousalReady() {
   }
   hideArousalPrep();
 
-  document.getElementById('btnStartTraining').click();
+  trainingState.isRunning = true;
+  trainingState.isPaused = false;
+  
+  const firstTrainingPhase = trainingState._planModules && trainingState._planModules.length > 1 
+    ? trainingState._planModules[1] 
+    : 1;
+  
+  startPhase(firstTrainingPhase);
 }
 
 function onArousalSkip() {
   hideArousalPrep();
 
-  document.getElementById('btnStartTraining').click();
+  trainingState.isRunning = true;
+  trainingState.isPaused = false;
+  
+  const firstTrainingPhase = trainingState._planModules && trainingState._planModules.length > 1 
+    ? trainingState._planModules[1] 
+    : 1;
+  
+  startPhase(firstTrainingPhase);
 }
 
 let secondsInPhase = 0;

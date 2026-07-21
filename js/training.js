@@ -129,46 +129,23 @@ function startTraining() {
   trainingState.vibrationEnabled = s.vibDefault;
   voiceCoachEnabled = false;
   trainingState._planData = planData;
-  trainingState._planModules = TRAINING_PLANS[currentPlan].modules;
+  trainingState._planModules = [0].concat(TRAINING_PLANS[currentPlan].modules);
   currentVoiceDensity = TRAINING_PLANS[currentPlan].defaultVoice || 'cycle';
 
-  document.getElementById('emergencyBtn').style.display = '';
-  document.getElementById('extraControls').style.display = '';
-  document.getElementById('bottomNav').style.display = 'none';
-  document.getElementById('planSelector').style.display = 'none';
+  showTrainingActive();
+
+  document.getElementById('emergencyBtn').style.display = 'none';
+  document.getElementById('extraControls').style.display = 'none';
+  document.getElementById('trainingActiveControls').style.display = 'none';
   document.getElementById('voiceBtnText').textContent = '语音教练';
   document.getElementById('vibBtnText').textContent = trainingState.vibrationEnabled ? '关闭震动' : '震动模式';
-  document.getElementById('levelSelector').style.display = 'none';
 
   requestWakeLock();
   ensureAudioCtx();
 
-  let count = 3;
-  document.getElementById('trainingStatus').textContent = '准备';
-  document.getElementById('ringSub').textContent = '';
-  document.getElementById('instructionText').textContent = count;
-  document.getElementById('instructionText').style.color = 'var(--accent)';
-  document.getElementById('instructionText').style.animation = 'countdown-pop 0.8s ease-out';
-  document.getElementById('instructionSub').textContent = '训练即将开始';
-  document.getElementById('miniBeatDots').style.display = 'none';
-
-  const countdownTimer = setInterval(() => {
-    count--;
-    if (count > 0) {
-      const el = document.getElementById('instructionText');
-      el.textContent = count;
-      el.style.color = 'var(--accent)';
-      el.style.animation = 'none';
-      void el.offsetHeight;
-      el.style.animation = 'countdown-pop 0.8s ease-out';
-    } else {
-      clearInterval(countdownTimer);
-      document.getElementById('instructionText').style.animation = '';
-      trainingState.isRunning = true;
-      trainingState.isPaused = false;
-      startPhase(trainingState._planModules[0]);
-    }
-  }, 1000);
+  trainingState.currentPhase = 0;
+  updatePhaseBar(0);
+  showArousalPrep();
 }
 
 function pauseTraining() {
@@ -203,12 +180,12 @@ function stopTraining(completed) {
 
   document.getElementById('emergencyBtn').style.display = 'none';
   document.getElementById('extraControls').style.display = 'none';
-  document.getElementById('bottomNav').style.display = '';
+  document.getElementById('trainingActiveControls').style.display = 'none';
   document.getElementById('intervalIndicator').style.display = 'none';
   document.getElementById('miniBeatDots').style.display = 'none';
-  document.getElementById('planSelector').style.display = '';
-  document.getElementById('levelSelector').style.display = '';
   document.getElementById('instructionText').style.color = 'var(--accent)';
+
+  showTrainingSetup();
 
   if (completed) {
     Storage.addRecord();
@@ -223,22 +200,30 @@ function stopTraining(completed) {
 }
 
 function startPhase(phase) {
-  const planData = trainingState._planData;
-  if (!planData) return;
-  const phaseKey = 'phase' + phase;
-  const phaseConfig = planData[phaseKey];
-  if (!phaseConfig) { showToast('阶段配置错误'); return; }
   const prevPhase = trainingState.currentPhase;
-
   trainingState.currentPhase = phase;
   trainingState.phaseElapsed = 0;
-  trainingState.phaseTotal = phaseConfig.duration * 60;
-  trainingState.bpm = phaseConfig.bpm;
   trainingState.beatCount = 0;
 
   clearInterval(trainingState.metronomeTimer);
   clearInterval(trainingState.countdownTimer);
   stopPhase1Osc();
+
+  if (phase === 0) {
+    showArousalPrep();
+    updatePhaseBar(prevPhase);
+    document.getElementById('trainingStatus').textContent = '唤醒准备';
+    return;
+  }
+
+  const planData = trainingState._planData;
+  if (!planData) return;
+  const phaseKey = 'phase' + phase;
+  const phaseConfig = planData[phaseKey];
+  if (!phaseConfig) { showToast('阶段配置错误'); return; }
+
+  trainingState.phaseTotal = phaseConfig.duration * 60;
+  trainingState.bpm = phaseConfig.bpm;
 
   if (prevPhase > 0 && prevPhase !== phase) {
     playPhaseChange();
@@ -255,6 +240,11 @@ function startPhase(phase) {
   } else {
     trainingState.isSprinting = false;
   }
+
+  document.getElementById('preArousalBlock').style.display = 'none';
+  document.getElementById('trainingActiveControls').style.display = 'block';
+  document.getElementById('extraControls').style.display = 'flex';
+  document.getElementById('emergencyBtn').style.display = '';
 
   updatePhaseBar(prevPhase);
   updateTrainingUI();

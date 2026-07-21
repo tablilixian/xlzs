@@ -13,13 +13,8 @@ function initTraining() {
   renderPlanCards();
   syncPlanUI();
   updateTrainingUI();
-  document.getElementById('levelSelector').style.display = '';
-
-  // Show arousal prep block when entering training room
-  const block = document.getElementById('preArousalBlock');
-  if (block) {
-    showArousalPrep();
-  }
+  updatePlanDetailCard();
+  showTrainingSetup();
 }
 
 // ===== Plan Selection =====
@@ -108,11 +103,39 @@ function syncPlanUI() {
   });
   document.querySelectorAll('.phase-item').forEach(el => {
     const phase = parseInt(el.dataset.phase);
-    el.style.display = plan.modules.includes(phase) ? '' : 'none';
+    el.style.display = phase === 0 || plan.modules.includes(phase) ? '' : 'none';
   });
   const badge = document.getElementById('dashLevelBadge');
   if (badge) {
     badge.textContent = plan.name + ' · ' + (currentPlanLevel === 'beginner' ? '初级' : currentPlanLevel === 'intermediate' ? '中级' : '高级');
+  }
+  updatePlanDetailCard();
+}
+
+function updatePlanDetailCard() {
+  const plan = TRAINING_PLANS[currentPlan];
+  if (!plan) return;
+  
+  const iconEl = document.getElementById('planDetailIcon');
+  const nameEl = document.getElementById('planDetailName');
+  const descEl = document.getElementById('planDetailDesc');
+  const sceneEl = document.getElementById('planDetailScene');
+  const phasesEl = document.getElementById('planDetailPhases');
+  
+  if (iconEl) iconEl.textContent = plan.icon;
+  if (nameEl) nameEl.textContent = plan.name;
+  if (descEl) descEl.textContent = plan.desc;
+  if (sceneEl) sceneEl.textContent = '适用场景：' + plan.scene;
+  
+  if (phasesEl) {
+    phasesEl.innerHTML = '';
+    const phaseNames = { 1: '热身', 2: '爆发', 3: '控制' };
+    plan.modules.forEach(p => {
+      const tag = document.createElement('div');
+      tag.className = 'plan-detail-phase-tag';
+      tag.textContent = phaseNames[p] || '阶段' + p;
+      phasesEl.appendChild(tag);
+    });
   }
 }
 

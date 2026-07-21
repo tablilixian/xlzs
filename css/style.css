@@ -180,9 +180,24 @@ a { color: var(--accent); text-decoration: none; }
 
 /* ==================== Training Room ==================== */
 .training-header {
-  text-align: center; padding: 0.5rem 0 0.25rem;
+  text-align: center; padding: 1.5rem 0 1rem;
 }
-.training-header h2 { font-size: 1rem; color: var(--muted); font-weight: 400; }
+.training-header h2 {
+  font-size: 1.5rem; font-weight: 700; color: var(--accent);
+  letter-spacing: 0.05em;
+}
+.training-header p { color: var(--muted); font-size: 0.85rem; margin-top: 0.25rem; }
+
+#trainingActive .training-header {
+  padding: 0.5rem 0 0.25rem;
+}
+#trainingActive .training-header h2 {
+  font-size: 1rem; color: var(--muted); font-weight: 400;
+  letter-spacing: normal;
+}
+#trainingActive .training-header p {
+  display: none;
+}
 
 /* Phase Progress */
 .phase-bar {
@@ -445,6 +460,65 @@ a { color: var(--accent); text-decoration: none; }
   font-weight: 400;
   opacity: 0.6;
   margin-top: 0.1rem;
+}
+
+.plan-detail-card {
+  margin-top: 0.5rem;
+}
+.plan-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.plan-detail-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(230, 168, 23, 0.12);
+  border: 1px solid var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+.plan-detail-info {
+  flex: 1;
+  min-width: 0;
+}
+.plan-detail-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.plan-detail-desc {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.plan-detail-scene {
+  font-size: 0.75rem;
+  color: var(--accent);
+  padding: 0.3rem 0.5rem;
+  background: rgba(230, 168, 23, 0.08);
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+.plan-detail-phases {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+.plan-detail-phase-tag {
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  background: var(--bg3);
+  color: var(--muted);
+}
+.plan-detail-phase-tag.active {
+  background: rgba(230, 168, 23, 0.12);
+  color: var(--accent);
 }
 
 /* Level badge on dashboard */
@@ -739,6 +813,49 @@ a { color: var(--accent); text-decoration: none; }
 .phase-toggle-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(230, 168, 23, 0.08); }
 .phase-toggle-btn:active { transform: scale(0.96); }
 
+.start-card {
+  margin-top: 1rem;
+  text-align: left;
+}
+.start-card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+.start-card .start-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(230, 168, 23, 0.12);
+  border: 2px solid var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  animation: glow-pulse 3s ease-in-out infinite;
+  flex-shrink: 0;
+}
+.start-info {
+  flex: 1;
+  min-width: 0;
+}
+.start-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 0.15rem;
+}
+.start-sub {
+  font-size: 0.75rem;
+  color: var(--accent);
+}
+.start-hint {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
+  padding-left: 0.1rem;
+}
 .start-icon {
   width: 60px; height: 60px; margin-bottom: 1rem;
   border-radius: 50%; background: var(--bg2);
