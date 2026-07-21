@@ -1,11 +1,25 @@
-const CACHE_NAME = 'pillow-trainer-v1';
+const CACHE_NAME = 'pillow-trainer-v2';
 const ASSETS = [
   './',
   './index.html',
-  './manifest.json'
+  './manifest.json',
+  './css/style.css',
+  './js/storage.js',
+  './js/plans.js',
+  './js/vibration.js',
+  './js/audio.js',
+  './js/speech.js',
+  './js/settings.js',
+  './js/training.js',
+  './js/ui.js',
+  './js/arousal.js',
+  './js/pages/dashboard.js',
+  './js/pages/training.js',
+  './js/pages/knowledge.js',
+  './js/pages/analysis.js',
+  './js/app.js'
 ];
 
-// Install: cache core assets
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -15,7 +29,6 @@ self.addEventListener('install', (e) => {
   self.skipWaiting();
 });
 
-// Activate: clean old caches
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) => {
@@ -27,12 +40,10 @@ self.addEventListener('activate', (e) => {
   self.clients.claim();
 });
 
-// Fetch: cache-first for local assets, network-first for others
 self.addEventListener('fetch', (e) => {
   e.respondWith(
     caches.match(e.request).then((cached) => {
       return cached || fetch(e.request).then((response) => {
-        // Cache successful responses
         if (response.status === 200 && response.type === 'basic') {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
@@ -41,7 +52,6 @@ self.addEventListener('fetch', (e) => {
         }
         return response;
       }).catch(() => {
-        // Offline fallback
         if (e.request.mode === 'navigate') {
           return caches.match('./index.html');
         }
