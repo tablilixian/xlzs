@@ -990,59 +990,57 @@ a { color: var(--accent); text-decoration: none; }
   color: var(--ink);
 }
 
-/* Breathing Ring */
-.breath-ring-wrapper {
+/* Arousal Metronome */
+.arousal-metronome {
   position: relative;
   width: 100px;
   height: 100px;
   margin: 1rem auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.breath-ring {
-  width: 100px;
-  height: 100px;
+.arousal-beat {
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   border: 3px solid var(--accent);
-  position: absolute;
-  top: 0; left: 0;
-  transition: transform 0.3s ease-out;
-  transform: scale(0.8);
-  box-shadow: 0 0 20px var(--accent-glow);
+  box-shadow: 0 0 30px var(--accent-glow);
+  transition: transform 0.15s ease-out, opacity 0.15s ease-out;
+  transform: scale(1);
+  opacity: 1;
 }
-.breath-ring.phase-inhale {
-  transform: scale(1.2);
-  transition: transform 4s ease-in-out;
-  border-color: var(--accent);
+.arousal-beat.pulse {
+  transform: scale(1.15);
+  opacity: 0.7;
+  box-shadow: 0 0 40px var(--accent-glow);
 }
-.breath-ring.phase-hold {
-  transition: none;
-  border-color: #4A9EFF;
-  box-shadow: 0 0 20px rgba(74, 158, 255, 0.4);
-}
-.breath-ring.phase-exhale {
-  transform: scale(0.8);
-  transition: transform 8s ease-in-out;
-  border-color: var(--success);
-  box-shadow: 0 0 20px rgba(46, 204, 113, 0.4);
-}
-.breath-phase-text {
+.arousal-bpm-text {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--ink);
-  white-space: nowrap;
+  color: var(--accent);
   z-index: 1;
+}
+.arousal-story-title {
+  font-size: 1rem;
+  color: var(--accent);
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+.arousal-story-hint {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+  margin-bottom: 1rem;
 }
 
 /* Arousal Ready Button */
 #btnReady {
   margin-top: 1rem;
-}
-#btnReady:disabled {
-  opacity: 0.4;
-  pointer-events: none;
 }
 
 .arousal-skip {
@@ -1164,5 +1162,5 @@ a { color: var(--accent); text-decoration: none; }
 .analysis-failure-reason { color: var(--danger); }
 
 @media (prefers-reduced-motion: reduce) {
-  .breath-ring, .mini-beat-dot, .ring-progress { transition: none !important; animation: none !important; }
+  .arousal-beat, .mini-beat-dot, .ring-progress { transition: none !important; animation: none !important; }
 }

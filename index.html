@@ -170,11 +170,11 @@
       <!-- ===== Arousal Prep Block (Phase 0) ===== -->
       <div id="preArousalBlock">
         <div class="arousal-card">
-          <h3>🧘 唤醒准备</h3>
+          <h3>🔊 唤醒准备</h3>
           <div class="guidance">
-            闭眼，戴耳机，听呼吸引导。<br>
-            <strong>不急</strong>，用手或道具轻柔刺激，<br>
-            目标不是"最硬"，而是<strong>"感觉来了"</strong>（约70%硬度）。
+            戴耳机，听唤醒故事，用手或道具刺激。<br>
+            <strong>目标</strong>：硬起来，戴好安全套。<br>
+            准备好了就点击"已唤醒"进入训练。
           </div>
 
           <!-- State 1: before user starts -->
@@ -185,13 +185,15 @@
             <div class="arousal-skip" onclick="onArousalSkip()">跳过唤醒，直接开始</div>
           </div>
 
-          <!-- State 2: active breathing -->
+          <!-- State 2: active arousal -->
           <div id="arousalActiveState" style="display:none">
-            <div class="breath-ring-wrapper">
-              <div class="breath-ring" id="breathRing"></div>
-              <div class="breath-phase-text" id="breathPhaseText">🧘 准备</div>
+            <div class="arousal-metronome">
+              <div class="arousal-beat" id="arousalBeat"></div>
+              <div class="arousal-bpm-text" id="arousalBpmText">60 BPM</div>
             </div>
-            <button class="btn btn-primary btn-large btn-full" id="btnReady" onclick="onArousalReady()" disabled>
+            <div class="arousal-story-title" id="arousalStoryTitle">🔊 温柔爱抚</div>
+            <div class="arousal-story-hint">正在播放唤醒故事，边听边刺激</div>
+            <button class="btn btn-primary btn-large btn-full" id="btnReady" onclick="onArousalReady()">
               🌱 已唤醒，开始节拍训练
             </button>
             <div class="arousal-skip" onclick="onArousalSkip()">跳过唤醒，直接开始</div>

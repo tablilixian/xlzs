@@ -1,5 +1,15 @@
 let arousalPrepStart = null;
-let arousalBreathTimer = null;
+let arousalStoryIndex = -1;
+let arousalMetronomeTimer = null;
+let arousalStoryTimer = null;
+
+const AROUSAL_STORIES = [
+  { title: '温柔爱抚', file: 'arousal_story_1.mp3' },
+  { title: '隐秘欲望', file: 'arousal_story_2.mp3' },
+  { title: '感官觉醒', file: 'arousal_story_3.mp3' },
+  { title: '征服与臣服', file: 'arousal_story_4.mp3' },
+  { title: '梦幻缠绵', file: 'arousal_story_5.mp3' },
+];
 
 function showArousalPrep() {
   const block = document.getElementById('preArousalBlock');
@@ -15,7 +25,7 @@ function showArousalPrep() {
   document.getElementById('arousalStartState').style.display = '';
   document.getElementById('arousalActiveState').style.display = 'none';
 
-  stopBreathingCycle();
+  stopArousalMetronome();
   stopArousalVoice();
 
   arousalPrepStart = null;
@@ -25,14 +35,57 @@ function startArousalSession() {
   document.getElementById('arousalStartState').style.display = 'none';
   document.getElementById('arousalActiveState').style.display = '';
 
-  document.getElementById('btnReady').disabled = true;
-  document.getElementById('btnReady').style.opacity = '0.4';
-  document.getElementById('btnReady').style.pointerEvents = 'none';
-
   arousalPrepStart = Date.now();
 
-  startArousalVoice();
-  startBreathingCycle();
+  startArousalMetronome();
+  playNextArousalStory();
+}
+
+function startArousalMetronome() {
+  stopArousalMetronome();
+  const bpm = 60;
+  const interval = 60000 / bpm;
+  const beat = document.getElementById('arousalBeat');
+  if (!beat) return;
+  document.getElementById('arousalBpmText').textContent = bpm + ' BPM';
+
+  beat.classList.remove('pulse');
+  arousalMetronomeTimer = setInterval(() => {
+    beat.classList.add('pulse');
+    if (trainingState.vibrationEnabled) vibrate(15);
+    setTimeout(() => beat.classList.remove('pulse'), interval * 0.3);
+  }, interval);
+}
+
+function stopArousalMetronome() {
+  if (arousalMetronomeTimer) {
+    clearInterval(arousalMetronomeTimer);
+    arousalMetronomeTimer = null;
+  }
+}
+
+function playNextArousalStory() {
+  if (!voiceCoachEnabled) return;
+  stopArousalVoice();
+
+  arousalStoryIndex = (arousalStoryIndex + 1) % AROUSAL_STORIES.length;
+  const story = AROUSAL_STORIES[arousalStoryIndex];
+  const titleEl = document.getElementById('arousalStoryTitle');
+  if (titleEl) titleEl.textContent = '🔊 ' + story.title;
+
+  playAudioFile(story.file).then(() => {
+    if (document.getElementById('arousalActiveState').style.display === '') {
+      arousalStoryTimer = setTimeout(playNextArousalStory, 3000);
+    }
+  });
+}
+
+function stopArousalVoice() {
+  if (arousalStoryTimer) {
+    clearTimeout(arousalStoryTimer);
+    arousalStoryTimer = null;
+  }
+  stopSpeaking();
 }
 
 function hideArousalPrep() {
@@ -44,7 +97,7 @@ function hideArousalPrep() {
   document.getElementById('planSelector').style.display = '';
   document.getElementById('trainingControls').style.display = '';
 
-  stopBreathingCycle();
+  stopArousalMetronome();
   stopArousalVoice();
 }
 
@@ -76,99 +129,4 @@ function onArousalSkip() {
     : 1;
   
   startPhase(firstTrainingPhase);
-}
-
-let secondsInPhase = 0;
-let phase = 'inhale';
-let phaseDuration = 4;
-
-function resetBreathingState() {
-  secondsInPhase = 0;
-  phase = 'inhale';
-  phaseDuration = 4;
-}
-
-function startBreathingCycle() {
-  const ring = document.getElementById('breathRing');
-  const phaseText = document.getElementById('breathPhaseText');
-  if (!ring || !phaseText) return;
-
-  resetBreathingState();
-
-  const tick = () => {
-    secondsInPhase++;
-
-    if (secondsInPhase === 1) playBreathGuideSound(phase);
-
-    if (phase === 'inhale') {
-      const progress = secondsInPhase / 4;
-      const scale = 0.8 + (0.4 * progress);
-      ring.style.transition = 'transform 0.9s ease-out';
-      ring.style.transform = 'scale(' + scale + ')';
-      ring.className = 'breath-ring phase-inhale';
-      phaseText.textContent = '😮 吸气 ' + (4 - secondsInPhase + 1) + 's';
-      phaseText.style.color = 'var(--accent)';
-
-      if (secondsInPhase >= 4) {
-        secondsInPhase = 0;
-        phase = 'hold';
-        phaseDuration = 7;
-        ring.style.transform = 'scale(1.2)';
-      }
-    } else if (phase === 'hold') {
-      ring.className = 'breath-ring phase-hold';
-      phaseText.textContent = '🤫 屏息 ' + (7 - secondsInPhase + 1) + 's';
-      phaseText.style.color = '#4A9EFF';
-
-      if (secondsInPhase >= 7) {
-        secondsInPhase = 0;
-        phase = 'exhale';
-        phaseDuration = 8;
-      }
-    } else if (phase === 'exhale') {
-      const progress = secondsInPhase / 8;
-      const scale = 1.2 - (0.4 * progress);
-      ring.style.transition = 'transform 0.9s ease-out';
-      ring.style.transform = 'scale(' + scale + ')';
-      ring.className = 'breath-ring phase-exhale';
-      phaseText.textContent = '😌 呼气 ' + (8 - secondsInPhase + 1) + 's';
-      phaseText.style.color = 'var(--success)';
-
-      if (secondsInPhase >= 8) {
-        secondsInPhase = 0;
-        phase = 'inhale';
-        phaseDuration = 4;
-      }
-    }
-
-    arousalBreathTimer = setTimeout(tick, 1000);
-  };
-
-  ring.style.transition = 'none';
-  ring.style.transform = 'scale(0.8)';
-  tick();
-
-  setTimeout(() => {
-    document.getElementById('btnReady').disabled = false;
-    document.getElementById('btnReady').style.opacity = '';
-    document.getElementById('btnReady').style.pointerEvents = '';
-  }, 3000);
-}
-
-function stopBreathingCycle() {
-  if (arousalBreathTimer) {
-    clearTimeout(arousalBreathTimer);
-    arousalBreathTimer = null;
-  }
-  const ring = document.getElementById('breathRing');
-  const phaseText = document.getElementById('breathPhaseText');
-  if (ring) {
-    ring.style.transition = 'none';
-    ring.style.transform = 'scale(0.8)';
-    ring.className = 'breath-ring';
-  }
-  if (phaseText) {
-    phaseText.textContent = '🧘 准备';
-  }
-  resetBreathingState();
 }

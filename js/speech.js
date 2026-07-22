@@ -1,6 +1,4 @@
 let voiceCoachEnabled = false;
-let arousalVoiceTimer = null;
-
 const voiceQueue = [];
 let isPlaying = false;
 let currentAudio = null;
@@ -152,17 +150,4 @@ function testVoice() {
   speak('测试语音，你好', 'testVoice');
   showToast('正在播放测试语音...');
   setTimeout(() => { voiceCoachEnabled = wasEnabled; }, 3000);
-}
-
-function startArousalVoice() {
-  if (!voiceCoachEnabled) return;
-  speak('放松身体，闭上眼睛。用手或道具轻柔揉搓龟头冠状沟，上下撸动阴茎，刺激自己尽快勃起。等阴茎完全硬起来后，戴好安全套。准备好了就可以开始热身训练。', 'arousal');
-}
-
-function stopArousalVoice() {
-  if (arousalVoiceTimer) {
-    clearTimeout(arousalVoiceTimer);
-    arousalVoiceTimer = null;
-  }
-  stopSpeaking();
 }

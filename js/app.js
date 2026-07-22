@@ -31,7 +31,7 @@ function navigateTo(page) {
   }
 
   if (currentPage === 'training' && page !== 'training') {
-    stopBreathingCycle();
+    stopArousalMetronome();
     stopArousalVoice();
   }
 
