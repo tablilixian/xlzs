@@ -19,7 +19,7 @@ function refreshAnalysis() {
   for (let i = 29; i >= 0; i--) {
     const d = new Date(now);
     d.setDate(d.getDate() - i);
-    const ds = d.toISOString().split('T')[0];
+    const ds = getLocalDateString(d);
     const day = document.createElement('div');
     day.className = 'analysis-heatmap-day';
     if ((records.dates || []).includes(ds)) day.classList.add('done');
@@ -40,7 +40,7 @@ function refreshAnalysis() {
   for (let i = 0; i < 7; i++) {
     const wd = new Date(d);
     wd.setDate(d.getDate() + i);
-    const wds = wd.toISOString().split('T')[0];
+    const wds = getLocalDateString(wd);
     const count = (records.dates || []).filter(r => r === wds).length;
     weekData.push({ day: weekDays[i], count });
   }
@@ -83,13 +83,14 @@ function refreshAnalysis() {
       const dateObj = new Date(rec.date);
       const dateStr = rec.date.split('T')[0];
       const timeStr = dateObj.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
-      const hasFailure = failures.some(f => f.date && f.date.startsWith(dateStr));
       const dayPrep = prepRecords.filter(p => p.date && p.date.startsWith(dateStr));
       let prepStr = '';
       if (dayPrep.length > 0) {
         const avgPrep = Math.round(dayPrep.reduce((a, b) => a + b.seconds, 0) / dayPrep.length);
         prepStr = ' · 唤醒' + avgPrep + 's';
       }
+      const recStatus = rec.status || 'completed';
+      const isFailed = recStatus === 'failed' || recStatus === 'emergency';
       item.innerHTML = `
         <div class="analysis-record-main">
           <span class="analysis-record-date">${dateStr}</span>
@@ -99,7 +100,7 @@ function refreshAnalysis() {
           <span class="analysis-record-plan">${rec.planName || '未知计划'}</span>
           <span class="analysis-record-level">${rec.levelName || '初级'}</span>
           ${rec.totalDuration ? `<span class="analysis-record-duration">${rec.totalDuration}分钟</span>` : ''}
-          <span class="analysis-record-status ${hasFailure ? 'fail' : 'success'}">${hasFailure ? '失败' : '完成'}${prepStr}</span>
+          <span class="analysis-record-status ${isFailed ? 'fail' : 'success'}">${isFailed ? '失败' : '完成'}${prepStr}</span>
         </div>
       `;
       recordList.appendChild(item);

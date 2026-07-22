@@ -45,6 +45,7 @@ const DIFFICULTY_PRESETS = {
   },
 };
 
+/* 如果修改 plans.js 中的 BPM/时长等参数，请同步更新 index.html 知识库页面中的对应数据 */
 const TRAINING_PLANS = {
   full: {
     id: 'full', name: '完整训练', icon: '🏋️', desc: '三阶段全流程，全面能力提升',
@@ -172,6 +173,16 @@ const VOICE_PROMPTS = [
   { key: 'restart',      name: '冷却后重启',       trigger: '冷却倒计时结束' },
 ];
 
+const WEEK_MODE_PLANS = [
+  { plan: 'burstBoost', level: 'beginner' },
+  { plan: 'breathReset', level: 'intermediate' },
+  { plan: 'endurance', level: 'intermediate' },
+  { plan: null, level: null },
+  { plan: 'pcMuscle', level: 'intermediate' },
+  { plan: 'full', level: 'intermediate' },
+  { plan: 'full', level: 'advanced' },
+];
+
 const WEEK_MODES = [
   { name: '爆发挑战', desc: '爆发延长，挑战极限', icon: '⚡' },
   { name: '恢复训练', desc: '轻度训练，注重恢复', icon: '🌿' },
@@ -181,7 +192,19 @@ const WEEK_MODES = [
   { name: '综合训练', desc: '完整三阶段训练', icon: '🏋️' },
   { name: '自由训练', desc: '本周奖励日！可以尽情释放', icon: '🎉', isRewardDay: true }
 ];
+function getWeekModeIndex(date) {
+  const d = date.getDay();
+  return d === 0 ? 6 : d - 1;
+}
 const WEEK_DAYS = ['日', '一', '二', '三', '四', '五', '六'];
+
+let planLevelPrefs = {};
+function getPlanLevel(planId) {
+  return planLevelPrefs[planId] || 'intermediate';
+}
+function setPlanLevel(planId, level) {
+  planLevelPrefs[planId] = level;
+}
 
 let currentPlan = 'full';
 let currentPlanLevel = 'intermediate';

@@ -1,5 +1,8 @@
-const CACHE_NAME = 'pillow-trainer-v5';
-const ASSETS = [
+const CACHE_VERSION = 'v6';
+const CACHE_STATIC = 'pillow-trainer-static-' + CACHE_VERSION;
+const CACHE_AUDIO = 'pillow-trainer-audio-' + CACHE_VERSION;
+
+const STATIC_ASSETS = [
   './',
   './index.html',
   './manifest.json',
@@ -18,6 +21,9 @@ const ASSETS = [
   './js/pages/knowledge.js',
   './js/pages/analysis.js',
   './js/app.js',
+];
+
+const AUDIO_ASSETS = [
   './sounds/beep_01.ogg',
   './sounds/beep_02.ogg',
   './sounds/beep_03.ogg',
@@ -27,9 +33,6 @@ const ASSETS = [
   './sounds/bell_01.ogg',
   './sounds/bell_02.ogg',
   './sounds/bell_03.ogg',
-];
-
-const VOICE_FILES = [
   './sounds/voices/coachOpen.mp3',
   './sounds/voices/testVoice.mp3',
   './sounds/voices/pause.mp3',
@@ -57,11 +60,16 @@ const VOICE_FILES = [
   './sounds/voices/arousal_guide.mp3',
 ];
 
+function isAudioRequest(url) {
+  return url.includes('/sounds/');
+}
+
 self.addEventListener('install', (e) => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS.concat(VOICE_FILES));
-    })
+    Promise.all([
+      caches.open(CACHE_STATIC).then((cache) => cache.addAll(STATIC_ASSETS)),
+      caches.open(CACHE_AUDIO).then((cache) => cache.addAll(AUDIO_ASSETS)),
+    ])
   );
   self.skipWaiting();
 });
@@ -70,7 +78,7 @@ self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
-        keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))
+        keys.filter((k) => k !== CACHE_STATIC && k !== CACHE_AUDIO).map((k) => caches.delete(k))
       );
     })
   ).then(() => {
@@ -84,21 +92,34 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  e.respondWith(
-    caches.match(e.request).then((cached) => {
-      return cached || fetch(e.request).then((response) => {
-        if (response.status === 200 && response.type === 'basic') {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(e.request, clone);
-          });
-        }
-        return response;
-      }).catch(() => {
-        if (e.request.mode === 'navigate') {
-          return caches.match('./index.html');
-        }
-      });
-    })
-  );
+  if (isAudioRequest(e.request.url)) {
+    e.respondWith(
+      caches.match(e.request).then((cached) => {
+        return cached || fetch(e.request).then((response) => {
+          if (response.status === 200) {
+            const clone = response.clone();
+            caches.open(CACHE_AUDIO).then((cache) => cache.put(e.request, clone));
+          }
+          return response;
+        });
+      })
+    );
+  } else {
+    e.respondWith(
+      caches.match(e.request).then((cached) => {
+        const fetchPromise = fetch(e.request).then((response) => {
+          if (response.status === 200 && response.type === 'basic') {
+            const clone = response.clone();
+            caches.open(CACHE_STATIC).then((cache) => cache.put(e.request, clone));
+          }
+          return response;
+        }).catch(() => {
+          if (e.request.mode === 'navigate') {
+            return caches.match('./index.html');
+          }
+        });
+        return cached || fetchPromise;
+      })
+    );
+  }
 });

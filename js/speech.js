@@ -20,9 +20,11 @@ const VOICE_FILE_MAP = {
     3: 'phaseChange3.mp3',
   },
   phase1Beat: {
+    '匀速推入': 'phase1_push.mp3',
     '推入': 'phase1_push.mp3',
     '深入': 'phase1_push2.mp3',
     '停': 'phase1_stop.mp3',
+    '匀速抽出': 'phase1_pull.mp3',
     '抽出': 'phase1_pull.mp3',
     '退出': 'phase1_pull2.mp3',
     '入口停': 'phase1_entry.mp3',
@@ -33,14 +35,18 @@ const VOICE_FILE_MAP = {
     '空息': 'breath_hold.mp3',
   },
   phase2Beat: {
+    '冲': 'phase2_sprint.mp3',
     '冲刺': 'phase2_sprint.mp3',
+    '休息一下': 'phase2_rest.mp3',
     '休息': 'phase2_rest.mp3',
   },
   phase3Beat: {
+    '插入并收紧': 'phase3_push.mp3',
     '推+收': 'phase3_push.mp3',
-    '保持': 'phase3_hold.mp3',
-    '抽+放': 'phase3_pull.mp3',
     '呼+收': 'phase3_push.mp3',
+    '保持': 'phase3_hold.mp3',
+    '抽出并放松': 'phase3_pull.mp3',
+    '抽+放': 'phase3_pull.mp3',
   },
 };
 
@@ -150,13 +156,7 @@ function testVoice() {
 
 function startArousalVoice() {
   if (!voiceCoachEnabled) return;
-  const loop = () => {
-    if (document.getElementById('preArousalBlock') && !document.getElementById('preArousalBlock').classList.contains('hidden')) {
-      speak('深呼吸，专注感受，准备好了再继续', 'arousal');
-      arousalVoiceTimer = setTimeout(loop, 10000);
-    }
-  };
-  loop();
+  speak('放松身体，闭上眼睛。用手或道具轻柔揉搓龟头冠状沟，上下撸动阴茎，刺激自己尽快勃起。等阴茎完全硬起来后，戴好安全套。准备好了就可以开始热身训练。', 'arousal');
 }
 
 function stopArousalVoice() {

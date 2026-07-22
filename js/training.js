@@ -9,6 +9,11 @@ async function requestWakeLock() {
 function releaseWakeLock() {
   if (wakeLock) { wakeLock.release(); wakeLock = null; }
 }
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && trainingState.isRunning && !trainingState.isPaused) {
+    requestWakeLock();
+  }
+});
 
 const trainingState = {
   isRunning: false,
@@ -29,6 +34,7 @@ const trainingState = {
   _planModules: null,
   _sprintSec: 15,
   _restSec: 15,
+  _silentPhaseStart: false,
 };
 
 function getPlanLevelData(planId, level) {
@@ -64,49 +70,43 @@ function getPlanPhaseStates(phaseNum) {
     if (p === 'sleepRelax' || p === 'morningBoost') {
       return [
         null,
-        { text: '推入',   sub: '轻柔地推入，感受节奏', color: 'var(--accent)' },
+        { text: '匀速推入',   sub: '轻柔地推入，感受节奏', color: 'var(--accent)' },
         { text: '深入',   sub: '保持平稳，配合呼吸', color: 'var(--accent)' },
         { text: '停',     sub: '放松，感受身体反应', color: '#4A9EFF' },
-        { text: '抽出',   sub: '缓慢退出，深长呼气', color: 'var(--success)' },
+        { text: '匀速抽出',   sub: '缓慢退出，深长呼气', color: 'var(--success)' },
         { text: '退出',   sub: '放松盆底，完全呼出', color: 'var(--success)' },
         { text: '入口停', sub: '保持不动，深呼吸',   color: '#4A9EFF' },
       ];
     }
     return [
       null,
-      { text: '推入',   sub: '缓慢到底，吸气配合', color: 'var(--accent)' },
+      { text: '匀速推入',   sub: '缓慢到底，吸气配合', color: 'var(--accent)' },
       { text: '深入',   sub: '继续深入，保持节奏', color: 'var(--accent)' },
       { text: '停',     sub: '保持不动，深呼吸',   color: '#4A9EFF' },
-      { text: '抽出',   sub: '缓慢退至入口，呼气', color: 'var(--success)' },
+      { text: '匀速抽出',   sub: '缓慢退至入口，呼气', color: 'var(--success)' },
       { text: '退出',   sub: '继续退出，放松身体', color: 'var(--success)' },
       { text: '入口停', sub: '保持不动，深呼吸',   color: '#4A9EFF' },
     ];
   }
   if (phaseNum === 2) {
     return {
-      sprint: { text: '冲刺', sub: '加速运动，全力以赴', color: 'var(--accent2)' },
-      rest:   { text: '休息', sub: '降低强度，恢复呼吸', color: 'var(--success)' },
+      sprint: { text: '冲', sub: '加速运动，全力以赴', color: 'var(--accent2)' },
+      rest:   { text: '休息一下', sub: '降低强度，恢复呼吸', color: 'var(--success)' },
     };
   }
   if (phaseNum === 3) {
     if (p === 'pcMuscle' || p === 'kegelPro') {
       return [
-        { text: '吸气',   sub: '放松PC肌，深吸气', color: 'var(--success)' },
-        { text: '呼+收',   sub: '收紧PC肌，缓慢呼气', color: 'var(--accent)' },
-        { text: '保持',   sub: '持续收紧，感受控制', color: '#4A9EFF' },
-      ];
-    }
-    if (p === 'breathReset' || p === 'meditation') {
-      return [
-        { text: '吸气',   sub: '腹部鼓起，缓慢吸气', color: 'var(--accent)' },
-        { text: '屏息',   sub: '保持气息，感受控制', color: '#4A9EFF' },
-        { text: '呼气',   sub: '腹部收回，完全呼出', color: 'var(--success)' },
+        { text: '吸气',     sub: '放松PC肌，深吸气', color: 'var(--success)' },
+        { text: '插入并收紧', sub: '收紧PC肌，缓慢推入', color: 'var(--accent)' },
+        { text: '保持',     sub: '持续收紧，感受控制', color: '#4A9EFF' },
+        { text: '抽出并放松', sub: '放松PC肌，缓慢抽出', color: 'var(--success)' },
       ];
     }
     return [
-      { text: '推+收', sub: '收紧PC肌，缓慢推入', color: 'var(--accent)' },
-      { text: '保持',  sub: '持续收紧，感受控制', color: '#4A9EFF' },
-      { text: '抽+放', sub: '放松PC肌，缓慢抽出', color: 'var(--success)' },
+      { text: '插入并收紧', sub: '收紧PC肌，缓慢推入', color: 'var(--accent)' },
+      { text: '保持',     sub: '持续收紧，感受控制', color: '#4A9EFF' },
+      { text: '抽出并放松', sub: '放松PC肌，缓慢抽出', color: 'var(--success)' },
     ];
   }
   return [];
@@ -131,6 +131,7 @@ function startTraining() {
   currentVoiceDensity = s.voiceDensity || 'cycle';
   trainingState._planData = planData;
   trainingState._planModules = [0].concat(TRAINING_PLANS[currentPlan].modules);
+  trainingState._startTime = null;
 
   showTrainingActive();
 
@@ -188,16 +189,15 @@ function stopTraining(completed) {
 
   showTrainingSetup();
 
+  const prog = document.getElementById('overallProgress');
+  if (prog) prog.style.display = 'none';
+
   if (completed) {
-    const totalDuration = trainingState._planModules.reduce((acc, phase) => {
-      if (phase === 0) return acc;
-      const phaseKey = 'phase' + phase;
-      const phaseConfig = trainingState._planData && trainingState._planData[phaseKey];
-      return acc + (phaseConfig ? phaseConfig.duration : 0);
-    }, 0);
+    const elapsedMs = trainingState._startTime ? Date.now() - trainingState._startTime : 0;
+    const totalDuration = Math.max(1, Math.round(elapsedMs / 60000));
     Storage.addRecord(currentPlan, currentPlanLevel, trainingState.currentPhase, totalDuration);
     
-    const mode = WEEK_MODES[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1];
+    const mode = WEEK_MODES[getWeekModeIndex(new Date())];
     if (mode && mode.isRewardDay) {
       Storage.addRewardDayRecord();
       showToast('🎉 奖励日训练完成！今天可以尽情释放');
@@ -205,7 +205,7 @@ function stopTraining(completed) {
       showToast('训练完成！今日已打卡');
     }
     
-    if (shouldSpeak('phase')) speak('训练完成', 'complete');
+    if (shouldSpeak('phase')) speak('恭喜你完成训练', 'complete');
   } else {
     showToast('训练已结束');
   }
@@ -239,12 +239,15 @@ function startPhase(phase) {
 
   trainingState.phaseTotal = phaseConfig.duration * 60;
   trainingState.bpm = phaseConfig.bpm;
+  if (!trainingState._startTime) trainingState._startTime = Date.now();
 
   if (prevPhase > 0 && prevPhase !== phase) {
-    playPhaseChange();
-    if (shouldSpeak('phase')) speak('进入' + getPhaseName(phase), 'phaseChange', phase);
+    if (!trainingState._silentPhaseStart) {
+      playPhaseChange();
+      if (shouldSpeak('phase')) speak('进入' + getPhaseName(phase), 'phaseChange', phase);
+    }
   } else {
-    if (shouldSpeak('phase')) speak(getPhaseName(phase) + '开始', 'start');
+    if (!trainingState._silentPhaseStart && shouldSpeak('phase')) speak(getPhaseName(phase) + '开始', 'start');
   }
 
   if (phaseConfig.sprintSec !== undefined) {
@@ -269,9 +272,13 @@ function startPhase(phase) {
   updateTrainingUI();
   startMetronome();
   startCountdown();
+  updateOverallProgress();
 
   document.getElementById('trainingStatus').textContent = getPhaseName(phase) + '阶段';
   document.getElementById('ringSub').textContent = getPhaseName(phase);
+
+  const prog = document.getElementById('overallProgress');
+  if (prog) prog.style.display = 'flex';
 }
 
 function shouldSpeak(trigger) {
@@ -352,10 +359,13 @@ function startMetronome() {
 
       updateMiniBeatRing(mod === 0 ? 6 : mod);
 
-      if (shouldSpeak('beat')) {
-        speak(state.text, 'phase1Beat');
-      } else if (mod === 1 && shouldSpeak('cycle')) {
-        speak(state.text, 'phase1Beat');
+      const spokenMods = [1, 3, 4, 0];
+      if (spokenMods.includes(mod)) {
+        if (shouldSpeak('beat')) {
+          speak(state.text, 'phase1Beat');
+        } else if (mod === 1 && shouldSpeak('cycle')) {
+          speak(state.text, 'phase1Beat');
+        }
       }
     }, interval);
 
@@ -365,6 +375,8 @@ function startMetronome() {
     const cycleDur = sprintDur + restDur;
     let subTickAcc = 0;
     const subInterval = 250;
+    let sprintSpeakCount = 0;
+    let restSpoken = false;
 
     trainingState.metronomeTimer = setInterval(() => {
       if (trainingState.isPaused) return;
@@ -373,6 +385,7 @@ function startMetronome() {
       const isSprintNow = posInCycle < sprintDur;
 
       if (isSprintNow) {
+        if (posInCycle === 0) sprintSpeakCount = 0;
         const useHum = (currentSoundMode === 'hum');
         if (useHum) {
           stopPhase1Osc();
@@ -401,11 +414,12 @@ function startMetronome() {
         document.getElementById('instructionText').style.color = state.color;
         document.getElementById('instructionSub').textContent = state.sub;
         updateIntervalIndicator(true, sprintDur - posInCycle);
-        
-        if (posInCycle === 0 && shouldSpeak('beat')) {
-          speak(state.text, 'phase2Beat');
-        } else if (posInCycle === 0 && shouldSpeak('cycle')) {
-          speak(state.text, 'phase2Beat');
+
+        restSpoken = false;
+        if (sprintSpeakCount < 3 && posInCycle === Math.floor(sprintSpeakCount * sprintDur / 3)) {
+          sprintSpeakCount++;
+          if (shouldSpeak('beat')) speak('冲', 'phase2Beat');
+          else if (shouldSpeak('cycle')) speak('冲', 'phase2Beat');
         }
       } else {
         const restPos = posInCycle - sprintDur;
@@ -423,22 +437,24 @@ function startMetronome() {
         document.getElementById('instructionText').style.color = state.color;
         document.getElementById('instructionSub').textContent = state.sub;
         updateIntervalIndicator(false, restDur - (posInCycle - sprintDur));
-        
-        if (restPos === 0 && shouldSpeak('beat')) {
-          speak(state.text, 'phase2Beat');
-        } else if (restPos === 0 && shouldSpeak('cycle')) {
-          speak(state.text, 'phase2Beat');
+
+        if (restPos === 0 && !restSpoken) {
+          restSpoken = true;
+          if (shouldSpeak('beat')) speak('休息一下', 'phase2Beat');
+          else if (shouldSpeak('cycle')) speak('休息一下', 'phase2Beat');
         }
       }
     }, subInterval);
 
   } else if (trainingState.currentPhase === 3) {
     const useHum = (currentSoundMode === 'hum');
+    const phaseStates = getPlanPhaseStates(3);
+    if (!phaseStates.length) { showToast('阶段配置错误'); stopTraining(false); return; }
     trainingState.metronomeTimer = setInterval(() => {
       if (trainingState.isPaused) return;
       trainingState.beatCount++;
-      const idx = (trainingState.beatCount - 1) % getPlanPhaseStates(3).length;
-      const state = getPlanPhaseStates(3)[idx];
+      const idx = (trainingState.beatCount - 1) % phaseStates.length;
+      const state = phaseStates[idx];
 
       if (useHum) {
         stopPhase1Osc();
@@ -487,12 +503,36 @@ function startMetronome() {
   }
 }
 
+function updateOverallProgress() {
+  const mods = trainingState._planModules;
+  if (!mods || mods.length <= 1) return;
+  let totalSec = 0;
+  let elapsedSec = 0;
+  mods.forEach((m, i) => {
+    if (i === 0) return;
+    const planData = trainingState._planData;
+    const phaseConfig = planData ? planData['phase' + m] : null;
+    const dur = phaseConfig ? phaseConfig.duration * 60 : 0;
+    totalSec += dur;
+    if (m < trainingState.currentPhase) elapsedSec += dur;
+  });
+  if (trainingState.currentPhase > 0) {
+    elapsedSec += trainingState.phaseElapsed;
+  }
+  const pct = totalSec > 0 ? Math.min(100, Math.round((elapsedSec / totalSec) * 100)) : 0;
+  const fill = document.getElementById('overallProgressFill');
+  const label = document.getElementById('overallProgressLabel');
+  if (fill) fill.style.width = pct + '%';
+  if (label) label.textContent = pct + '%';
+}
+
 function startCountdown() {
   clearInterval(trainingState.countdownTimer);
   trainingState.countdownTimer = setInterval(() => {
     if (trainingState.isPaused) return;
     trainingState.phaseElapsed++;
     updateRingProgress();
+    updateOverallProgress();
     if (trainingState.phaseElapsed >= trainingState.phaseTotal) {
       const mods = trainingState._planModules;
       const curIdx = mods.indexOf(trainingState.currentPhase);
@@ -529,6 +569,8 @@ function emergencyStop() {
   trainingState.isPaused = true;
   trainingState.failureCount = (trainingState.failureCount || 0) + 1;
   trainingState._emergencyPhase = trainingState.currentPhase;
+  trainingState._emergencyElapsed = trainingState.phaseElapsed;
+  trainingState._emergencyBeatCount = trainingState.beatCount;
 
   Storage.addEmergencyStopRecord({
     date: new Date().toISOString(),
@@ -557,7 +599,7 @@ function emergencyStop() {
     document.getElementById('cooldownNumber').textContent = cooldown;
     if (cooldown <= 0) {
       clearInterval(cooldownTimer);
-      exitCooldown();
+      exitCooldown(trainingState._emergencyPhase);
     }
   }, 1000);
   overlay._timer = cooldownTimer;
@@ -571,8 +613,14 @@ function exitCooldown(resumeFromPhase) {
   if (trainingState.isRunning) {
     trainingState.isPaused = false;
     const targetPhase = resumeFromPhase || trainingState._planModules[0] || 1;
+    trainingState._silentPhaseStart = true;
     startPhase(targetPhase);
-    if (targetPhase === trainingState._emergencyPhase && targetPhase > 1) {
+    trainingState._silentPhaseStart = false;
+    if (targetPhase === trainingState._emergencyPhase && trainingState._emergencyElapsed > 0) {
+      trainingState.phaseElapsed = trainingState._emergencyElapsed;
+      trainingState.beatCount = trainingState._emergencyBeatCount || 0;
+      updateRingProgress();
+      updateOverallProgress();
       speak('继续，' + getPhaseName(targetPhase), 'restart');
     } else {
       speak('重开，' + getPhaseName(targetPhase), 'restart');
@@ -585,7 +633,8 @@ function cooldownResumeFromPhase() {
 }
 
 function cooldownRestartFromBegin() {
-  const firstPhase = trainingState._planModules ? trainingState._planModules[0] : 1;
+  trainingState._emergencyElapsed = 0;
+  const firstPhase = trainingState._planModules ? trainingState._planModules[1] || 1 : 1;
   exitCooldown(firstPhase);
 }
 
@@ -594,7 +643,7 @@ function showExitConfirm() {
   document.getElementById('exitConfirmModal').style.display = 'flex';
 }
 function closeExitConfirm(e) {
-  if (e && e.target !== document.getElementById('exitConfirmModal')) return;
+  if (e) return;
   document.getElementById('exitConfirmModal').style.display = 'none';
 }
 function confirmExitTraining() {
@@ -604,7 +653,7 @@ function confirmExitTraining() {
 
 // ==================== Failure Reason Modal ====================
 function closeFailureModal(e) {
-  if (e && e.target !== document.getElementById('failureModal')) return;
+  if (e) return;
   document.getElementById('failureModal').style.display = 'none';
 }
 function recordFailure(reason) {
@@ -615,6 +664,9 @@ function recordFailure(reason) {
     tired: '身体状态不好',
     other: '其他原因'
   };
+  const elapsedMs = trainingState._startTime ? Date.now() - trainingState._startTime : 0;
+  const totalDuration = Math.max(1, Math.round(elapsedMs / 60000));
+  Storage.addRecord(currentPlan, currentPlanLevel, trainingState.currentPhase, totalDuration, 'failed');
   Storage.addFailureRecord({
     date: new Date().toISOString(),
     plan: currentPlan,

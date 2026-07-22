@@ -7,17 +7,26 @@ function refreshDashboard() {
   const greeting = h < 6 ? '夜深了' : h < 12 ? '早上好' : h < 18 ? '下午好' : '晚上好';
   greetingEl.textContent = greeting;
   
+  const rec = Storage.getRecords();
+  const emptyState = document.getElementById('dashboardEmptyState');
+  if (emptyState) {
+    emptyState.style.display = rec.total > 0 ? 'none' : '';
+  }
+  const resumeCard = document.getElementById('resumeCard');
+  if (resumeCard) {
+    resumeCard.style.display = trainingState.isPaused ? '' : 'none';
+  }
+  
   const dayNameEl = document.getElementById('dayName');
   if (dayNameEl) dayNameEl.textContent = '周' + WEEK_DAYS[now.getDay()];
 
-  const mode = WEEK_MODES[now.getDay() === 0 ? 6 : now.getDay() - 1];
+  const mode = WEEK_MODES[getWeekModeIndex(now)];
   const modeNameEl = document.getElementById('modeName');
   if (modeNameEl) {
     const rewardBadge = mode.isRewardDay ? '<span style="display:inline-flex;align-items:center;gap:2px;margin-left:8px;padding:2px 6px;background:rgba(230,168,23,0.15);border-radius:10px;font-size:10px;color:var(--accent);font-weight:600">🎁 奖励日</span>' : '';
     modeNameEl.innerHTML = (mode.icon || '') + ' ' + mode.name + ' - ' + mode.desc + rewardBadge;
   }
 
-  const rec = Storage.getRecords();
   const statStreakEl = document.getElementById('statStreak');
   if (statStreakEl) statStreakEl.textContent = rec.streak || '—';
   
@@ -33,8 +42,15 @@ function refreshDashboard() {
   const statTotalEl = document.getElementById('statTotal');
   if (statTotalEl) statTotalEl.textContent = rec.total || '—';
 
-  const plan = TRAINING_PLANS[currentPlan];
-  const planLevelData = plan ? plan.levels[currentPlanLevel] : null;
+  const modeIdx = getWeekModeIndex(now);
+  const modePlan = WEEK_MODE_PLANS[modeIdx];
+  let recommendPlan = TRAINING_PLANS[currentPlan];
+  let recommendLevel = currentPlanLevel;
+  if (modePlan && modePlan.plan && TRAINING_PLANS[modePlan.plan]) {
+    recommendPlan = TRAINING_PLANS[modePlan.plan];
+    recommendLevel = modePlan.level;
+  }
+  const planLevelData = recommendPlan ? recommendPlan.levels[recommendLevel] : null;
   let totalDuration = 0;
   if (planLevelData) {
     Object.keys(planLevelData).forEach(k => {
@@ -44,13 +60,13 @@ function refreshDashboard() {
     });
   }
 
-  const levelName = currentPlanLevel === 'beginner' ? '初级' : currentPlanLevel === 'intermediate' ? '中级' : '高级';
+  const levelName = recommendLevel === 'beginner' ? '初级' : recommendLevel === 'intermediate' ? '中级' : '高级';
 
   if (document.getElementById('dashStartIcon')) {
-    document.getElementById('dashStartIcon').textContent = plan ? plan.icon : '🏋️';
+    document.getElementById('dashStartIcon').textContent = recommendPlan ? recommendPlan.icon : '🏋️';
   }
   if (document.getElementById('dashStartTitle')) {
-    document.getElementById('dashStartTitle').textContent = '今日推荐：' + (plan ? plan.name : '完整训练');
+    document.getElementById('dashStartTitle').textContent = '今日推荐：' + (recommendPlan ? recommendPlan.name : '完整训练');
   }
   if (document.getElementById('dashStartSub')) {
     document.getElementById('dashStartSub').textContent = levelName + ' · ' + totalDuration + '分钟';
@@ -71,13 +87,12 @@ function refreshDashboard() {
 
   const dotsEl = document.getElementById('weekDots');
   dotsEl.innerHTML = '';
-  const today = now.getDay();
-  const dayOfWeek = today === 0 ? 6 : today - 1;
+  const dayOfWeek = getWeekModeIndex(now);
   for (let i = 0; i < 7; i++) {
     const d = new Date(now);
     d.setDate(now.getDate() - dayOfWeek + i);
-    const ds = d.toISOString().split('T')[0];
-    const isToday = ds === now.toISOString().split('T')[0];
+    const ds = getLocalDateString(d);
+    const isToday = ds === getLocalDateString(now);
     const done = rec.dates.includes(ds);
     const dot = document.createElement('div');
     dot.className = 'week-dot' + (done ? ' done' : '') + (isToday ? ' today' : '');

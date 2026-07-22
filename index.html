@@ -22,6 +22,11 @@
       <div class="day-name" id="dayName"></div>
       <div class="mode-name" id="modeName"></div>
     </div>
+    <div class="empty-state" id="dashboardEmptyState" style="display:none">
+      <div class="empty-state-icon">🏋️</div>
+      <div class="empty-state-text">开始你的第一次训练吧</div>
+      <div class="empty-state-hint">点击下方按钮，跟随节奏完成三阶段训练</div>
+    </div>
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-value" id="statStreak">0</div>
@@ -39,6 +44,12 @@
     <div class="card">
       <div class="card-title"><span class="icon">&#9733;</span> 本周打卡</div>
       <div class="week-dots" id="weekDots"></div>
+    </div>
+    <div class="card resume-card" id="resumeCard" style="display:none" onclick="navigateTo('training')">
+      <div class="resume-card-content">
+        <span class="resume-card-icon">▶️</span>
+        <span class="resume-card-text">检测到暂停的训练，点击恢复</span>
+      </div>
     </div>
     <div class="card start-card">
       <div class="start-card-header">
@@ -149,6 +160,11 @@
           <span class="phase-label">控制</span>
           <span class="phase-bpm" id="phase3bpm">25 BPM</span>
         </div>
+      </div>
+
+      <div class="overall-progress" id="overallProgress" style="display:none">
+        <div class="overall-progress-bar"><div class="overall-progress-fill" id="overallProgressFill"></div></div>
+        <span class="overall-progress-label" id="overallProgressLabel">0%</span>
       </div>
 
       <!-- ===== Arousal Prep Block (Phase 0) ===== -->
@@ -462,6 +478,13 @@
           🔄 恢复默认设置
         </button>
         <div style="font-size:0.75rem;color:var(--muted);text-align:center;margin-bottom:1rem">恢复所有设置为默认值，不影响训练数据</div>
+        <button class="btn btn-secondary btn-full" onclick="exportData()" style="margin-bottom:0.75rem">
+          📤 导出训练数据
+        </button>
+        <button class="btn btn-secondary btn-full" onclick="document.getElementById('importFileInput').click()" style="margin-bottom:0.75rem">
+          📥 导入训练数据
+        </button>
+        <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importData(event)">
         <button class="btn btn-danger btn-full" onclick="resetAllData()">
           🗑️ 重置所有训练数据
         </button>
@@ -590,7 +613,7 @@
   <div class="cooldown-badge">控射暂停成功</div>
   <div class="cooldown-number" id="cooldownNumber">10</div>
   <div class="cooldown-text">冷却中 — 深呼吸，放松身心</div>
-  <button class="btn btn-ghost cooldown-btn" onclick="exitCooldown()">跳过冷却</button>
+  <button class="btn btn-ghost cooldown-btn" onclick="exitCooldown(trainingState._emergencyPhase)">跳过冷却</button>
   <div class="cooldown-resume-opt" id="cooldownResumeOpt" style="display:none">
     <button class="btn btn-ghost cooldown-btn" onclick="cooldownRestartFromBegin()">从头开始</button>
     <button class="btn btn-accent cooldown-btn" onclick="cooldownResumeFromPhase()">恢复训练</button>

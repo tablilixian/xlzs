@@ -1,11 +1,24 @@
 // ==================== Toast ====================
+const toastQueue = [];
 let toastTimer = null;
+let isToastShowing = false;
 function showToast(msg) {
+  toastQueue.push(msg);
+  processToastQueue();
+}
+function processToastQueue() {
+  if (isToastShowing || toastQueue.length === 0) return;
+  isToastShowing = true;
+  const msg = toastQueue.shift();
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+  toastTimer = setTimeout(() => {
+    t.classList.remove('show');
+    isToastShowing = false;
+    processToastQueue();
+  }, 2000);
 }
 
 // ==================== Router ====================
@@ -38,6 +51,42 @@ function navigateTo(page) {
   if (page === 'training') initTraining();
   if (page === 'dashboard') refreshDashboard();
   if (page === 'analysis') refreshAnalysis();
+}
+
+function exportData() {
+  const data = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith('pt_')) data[key] = JSON.parse(localStorage.getItem(key));
+  }
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'xlzs-data-' + new Date().toISOString().split('T')[0] + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('数据已导出');
+}
+
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (!confirm('导入将覆盖当前所有训练数据，确定继续吗？')) { e.target.value = ''; return; }
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const data = JSON.parse(ev.target.result);
+      Object.keys(data).forEach(key => {
+        if (key.startsWith('pt_')) localStorage.setItem(key, JSON.stringify(data[key]));
+      });
+      showToast('数据已导入');
+      refreshDashboard();
+      populateSettings();
+    } catch (err) { showToast('导入失败：文件格式错误'); }
+    e.target.value = '';
+  };
+  reader.readAsText(file);
 }
 
 function resetAllData() {

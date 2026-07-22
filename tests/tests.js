@@ -118,23 +118,23 @@ QUnit.module('getPlanPhaseStates', function() {
     const states = getPlanPhaseStates(1);
     assert.equal(states.length, 7, '6 beats + null index 0');
     assert.equal(states[1].text, '匀速推入', 'beat 1 is push');
-    assert.equal(states[3].text, '深处停止', 'beat 3 is stop');
-    assert.equal(states[6].text, '入口停止', 'beat 6 is stop');
+    assert.equal(states[3].text, '停', 'beat 3 is stop');
+    assert.equal(states[6].text, '入口停', 'beat 6 is stop');
   });
 
   QUnit.test('Phase 2 has sprint and rest', function(assert) {
     const states = getPlanPhaseStates(2);
     assert.ok(states.sprint, 'has sprint state');
     assert.ok(states.rest, 'has rest state');
-    assert.equal(states.sprint.text, '全力冲刺');
-    assert.equal(states.rest.text, '停止休息');
+    assert.equal(states.sprint.text, '冲');
+    assert.equal(states.rest.text, '休息一下');
   });
 
-  QUnit.test('Phase 3 returns 3-beat cycle states', function(assert) {
+  QUnit.test('Phase 3 returns beat cycle states', function(assert) {
     const states = getPlanPhaseStates(3);
     assert.equal(states.length, 3, '3 beats');
-    assert.equal(states[0].text, '推入+凯格尔');
-    assert.equal(states[2].text, '抽出+放松');
+    assert.equal(states[0].text, '插入并收紧');
+    assert.equal(states[2].text, '抽出并放松');
   });
 });
 

@@ -1,3 +1,7 @@
+function getLocalDateString(date) {
+  return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+}
+
 const Storage = {
   get(key, fallback) {
     try {
@@ -11,10 +15,10 @@ const Storage = {
   getRecords() {
     return this.get('records', { dates: [], total: 0, streak: 0, detailed: [] });
   },
-  addRecord(planId, level, phasesCompleted, totalDuration) {
+  addRecord(planId, level, lastPhase, totalDuration, status) {
     const r = this.getRecords();
     const now = new Date();
-    const today = now.toISOString().split('T')[0];
+    const today = getLocalDateString(now);
     
     const plan = TRAINING_PLANS[planId];
     const planName = plan ? plan.name : '未知计划';
@@ -26,9 +30,10 @@ const Storage = {
       planName,
       level,
       levelName,
-      phasesCompleted,
+      lastPhase,
       totalDuration,
-      timestamp: now.getTime()
+      timestamp: now.getTime(),
+      status: status || 'completed'
     });
     
     if (!r.dates.includes(today)) {
@@ -37,7 +42,7 @@ const Storage = {
       let streak = 0;
       const d = new Date();
       while (true) {
-        const ds = d.toISOString().split('T')[0];
+        const ds = getLocalDateString(d);
         if (r.dates.includes(ds)) { streak++; d.setDate(d.getDate() - 1); }
         else break;
       }
@@ -78,7 +83,7 @@ const Storage = {
   addRewardDayRecord() {
     const list = this.getRewardDayRecords();
     const now = new Date();
-    const today = now.toISOString().split('T')[0];
+    const today = getLocalDateString(now);
     if (list.some(r => r.date === today)) return;
     list.push({
       date: today,
@@ -88,7 +93,7 @@ const Storage = {
   },
   isRewardDayToday() {
     const now = new Date();
-    const today = now.toISOString().split('T')[0];
+    const today = getLocalDateString(now);
     const list = this.getRewardDayRecords();
     return list.some(r => r.date === today);
   }

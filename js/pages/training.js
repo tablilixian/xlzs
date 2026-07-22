@@ -1,4 +1,11 @@
 function initTraining() {
+  if (trainingState.isPaused) {
+    if (!confirm('当前有暂停的训练，是否放弃？')) {
+      return;
+    }
+    stopSpeaking();
+    releaseWakeLock();
+  }
   trainingState.isRunning = false;
   trainingState.isPaused = false;
   trainingState.currentPhase = 0;
@@ -20,9 +27,11 @@ function initTraining() {
 // ===== Plan Selection =====
 function selectPlan(planId) {
   if (trainingState.isRunning) return;
+  setPlanLevel(currentPlan, currentPlanLevel);
   currentPlan = planId;
   const plan = TRAINING_PLANS[planId];
   if (!plan) return;
+  currentPlanLevel = getPlanLevel(planId);
   currentSoundMode = plan.defaultSound || 'mixed';
   renderPlanCards();
   syncPlanUI();
@@ -33,6 +42,7 @@ function selectPlan(planId) {
 function selectPlanLevel(level) {
   if (trainingState.isRunning) return;
   currentPlanLevel = level;
+  setPlanLevel(currentPlan, level);
   document.querySelectorAll('#levelSelector .config-btn[data-level]').forEach(b => {
     b.classList.toggle('active', b.dataset.level === level);
   });
@@ -180,9 +190,28 @@ function toggleCustomPhase(phase) {
   renderCustomPanel();
 }
 
+function validateCustomInputs() {
+  for (const k of Object.keys(customPlanDraft)) {
+    const mod = customPlanDraft[k];
+    if (!mod) continue;
+    const bpmEl = document.getElementById('cp_' + k + '_bpm');
+    const durEl = document.getElementById('cp_' + k + '_dur');
+    if (bpmEl) { const v = parseInt(bpmEl.value); if (isNaN(v) || v < 15 || v > 200) { showToast('BPM 需在 15-200 之间'); return false; } }
+    if (durEl) { const v = parseInt(durEl.value); if (isNaN(v) || v < 1 || v > 30) { showToast('时长需在 1-30 分钟之间'); return false; } }
+    const sprintEl = document.getElementById('cp_' + k + '_sprint');
+    const restEl = document.getElementById('cp_' + k + '_rest');
+    if (sprintEl) { const v = parseInt(sprintEl.value); if (isNaN(v) || v < 5 || v > 60) { showToast('冲刺秒数需在 5-60 之间'); return false; } }
+    if (restEl) { const v = parseInt(restEl.value); if (isNaN(v) || v < 5 || v > 60) { showToast('休息秒数需在 5-60 之间'); return false; } }
+    const holdEl = document.getElementById('cp_' + k + '_hold');
+    if (holdEl) { const v = parseInt(holdEl.value); if (isNaN(v) || v < 1 || v > 15) { showToast('保持秒数需在 1-15 之间'); return false; } }
+  }
+  return true;
+}
+
 function saveCustomPlan() {
   const name = document.getElementById('customPlanName')?.value?.trim() || '自定义计划';
   if (!name) { showToast('请输入计划名称'); return; }
+  if (!validateCustomInputs()) return;
   Object.keys(customPlanDraft).forEach(k => {
     const mod = customPlanDraft[k];
     if (!mod) return;
@@ -200,6 +229,7 @@ function saveCustomPlan() {
   const s = loadSettings();
   if (!s.customPlans) s.customPlans = [];
   const modules = Object.keys(customPlanDraft).filter(k => customPlanDraft[k]).map(k => parseInt(k.replace('phase', '')));
+  const draft = JSON.parse(JSON.stringify(customPlanDraft));
   const newPlan = {
     id: 'custom_' + Date.now(),
     name: name,
@@ -208,7 +238,11 @@ function saveCustomPlan() {
     scene: '自定义',
     modules: modules,
     defaultSound: currentSoundMode,
-    levels: { custom: JSON.parse(JSON.stringify(customPlanDraft)) },
+    levels: {
+      beginner: JSON.parse(JSON.stringify(draft)),
+      intermediate: JSON.parse(JSON.stringify(draft)),
+      advanced: JSON.parse(JSON.stringify(draft)),
+    },
     isCustom: true
   };
   s.customPlans.push(newPlan);

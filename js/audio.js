@@ -1,6 +1,17 @@
 let audioCtx = null;
 let phase1Osc = null;
 let phase1Gain = null;
+const audioCache = {};
+
+function getOrCreateAudio(filePath) {
+  if (!audioCache[filePath]) {
+    audioCache[filePath] = new Audio(`sounds/${filePath}`);
+    audioCache[filePath].volume = 0.3;
+  } else {
+    audioCache[filePath].currentTime = 0;
+  }
+  return audioCache[filePath];
+}
 
 function ensureAudioCtx() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -12,8 +23,7 @@ function playSound(filePath) {
   const settings = loadSettings();
   if (!settings.soundEnabled) return;
   try {
-    const audio = new Audio(`sounds/${filePath}`);
-    audio.volume = 0.3;
+    const audio = getOrCreateAudio(filePath);
     audio.play().catch(() => {});
   } catch (e) {}
 }
@@ -32,7 +42,7 @@ function playTick(freq, duration) {
     osc.connect(gain);
     gain.connect(ctx.destination);
     osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + (duration || 0.05));
+    osc.stop(ctx.currentTime + (duration || 0.05) + 0.01);
   } catch (e) {}
 }
 
@@ -43,7 +53,21 @@ function playPhaseChange() {
 }
 
 function playStopDing(freq) {
-  playSound('bell_01.ogg');
+  const settings = loadSettings();
+  if (!settings.soundEnabled) return;
+  try {
+    const ctx = ensureAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.frequency.value = freq || 600;
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.35);
+  } catch (e) {}
 }
 
 function playBreathGuideSound(phase) {

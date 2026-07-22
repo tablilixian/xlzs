@@ -140,6 +140,34 @@ a { color: var(--accent); text-decoration: none; }
 }
 .btn-round { border-radius: 50%; width: 64px; height: 64px; padding: 0; }
 .btn-sm { padding: 0.5rem 1rem; font-size: 0.85rem; min-height: 36px; }
+.btn-loading { position: relative; pointer-events: none; color: transparent !important; }
+.btn-loading::after {
+  content: ''; position: absolute; width: 20px; height: 20px;
+  border: 2px solid rgba(0,0,0,0.3); border-top-color: #000; border-radius: 50%;
+  animation: btn-spin 0.6s linear infinite;
+}
+@keyframes btn-spin { to { transform: rotate(360deg); } }
+.btn-danger.btn-loading::after { border-color: rgba(255,255,255,0.3); border-top-color: #fff; }
+.btn-secondary.btn-loading::after { border-color: rgba(255,255,255,0.3); border-top-color: #fff; }
+
+/* ==================== Overall Progress ==================== */
+.overall-progress { display: flex; align-items: center; gap: 0.5rem; margin: 0.75rem 0; }
+.overall-progress-bar { flex: 1; height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
+.overall-progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.5s ease; width: 0%; }
+.overall-progress-label { font-size: 0.7rem; color: var(--muted); min-width: 2.5rem; text-align: right; }
+
+/* ==================== Empty State ==================== */
+.empty-state { text-align: center; padding: 2rem 1rem; color: var(--muted); }
+.empty-state-icon { font-size: 3rem; margin-bottom: 0.75rem; opacity: 0.5; }
+.empty-state-text { font-size: 0.95rem; margin-bottom: 0.5rem; }
+.empty-state-hint { font-size: 0.8rem; color: var(--muted); }
+
+/* ==================== Resume Card ==================== */
+.resume-card { background: var(--bg2) !important; border: 1px solid var(--accent); cursor: pointer; }
+.resume-card:hover { background: var(--bg3) !important; }
+.resume-card-content { display: flex; align-items: center; gap: 0.75rem; }
+.resume-card-icon { font-size: 1.5rem; }
+.resume-card-text { font-size: 0.9rem; color: var(--accent); font-weight: 600; }
 
 /* ==================== Dashboard ==================== */
 .dashboard-hero {
@@ -205,11 +233,11 @@ a { color: var(--accent); text-decoration: none; }
 
 /* Phase Progress */
 .phase-bar {
-  display: flex; gap: 0.5rem; margin: 1rem 0;
-  padding: 0 0.5rem;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+  gap: 0.5rem; margin: 1rem 0; padding: 0 0.5rem;
 }
 .phase-item {
-  flex: 1; text-align: center; padding: 0.6rem 0.25rem;
+  text-align: center; padding: 0.6rem 0.25rem;
   border-radius: var(--radius); font-size: 0.75rem;
   background: var(--bg3); color: var(--muted);
   transition: all var(--transition); position: relative;
@@ -1083,10 +1111,10 @@ a { color: var(--accent); text-decoration: none; }
 .analysis-stat { text-align: center; padding: 0.5rem; }
 .analysis-stat-val { font-size: 1.5rem; font-weight: 900; color: var(--ink); }
 .analysis-stat-label { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
-.analysis-heatmap { display: flex; flex-wrap: wrap; gap: 3px; }
+.analysis-heatmap { display: grid; grid-template-columns: repeat(auto-fill, minmax(14px, 1fr)); gap: 3px; max-width: 100%; }
 .analysis-heatmap-day {
-  width: 14px; height: 14px; border-radius: 2px;
-  background: var(--bg3); position: relative;
+  aspect-ratio: 1; min-width: 10px; min-height: 10px;
+  border-radius: 2px; background: var(--bg3); position: relative;
 }
 .analysis-heatmap-day.done { background: var(--accent); }
 .analysis-heatmap-day.fail { background: var(--danger); }
@@ -1134,3 +1162,7 @@ a { color: var(--accent); text-decoration: none; }
 .analysis-failure-item:last-child { border-bottom: none; }
 .analysis-failure-date { color: var(--ink); font-weight: 600; }
 .analysis-failure-reason { color: var(--danger); }
+
+@media (prefers-reduced-motion: reduce) {
+  .breath-ring, .mini-beat-dot, .ring-progress { transition: none !important; animation: none !important; }
+}
