@@ -305,6 +305,20 @@ a { color: var(--accent); text-decoration: none; }
 .instruction-sub { font-size: 0.9rem; color: var(--muted); margin-top: 0.5rem; }
 @keyframes breathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 
+/* Story Player Indicator */
+.story-player-indicator {
+  text-align: center; padding: 0.3rem 0.75rem;
+  margin: 0.25rem 0 0.5rem; min-height: 1.6rem;
+  display: flex; align-items: center; justify-content: center;
+}
+.story-player-title {
+  font-size: 0.8rem; color: var(--muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 100%;
+  animation: fadeInOut 4s ease-in-out infinite;
+}
+@keyframes fadeInOut { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+
 /* Control Buttons */
 .controls {
   display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;

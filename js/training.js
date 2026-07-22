@@ -140,10 +140,12 @@ function startTraining() {
   document.getElementById('trainingActiveControls').style.display = 'none';
   document.getElementById('voiceBtnText').textContent = voiceCoachEnabled ? '关闭语音' : '语音教练';
   document.getElementById('vibBtnText').textContent = trainingState.vibrationEnabled ? '关闭震动' : '震动模式';
+  document.getElementById('storyBtnText').textContent = storyPlayerEnabled ? '关闭故事' : '背景故事';
   document.getElementById('intervalIndicator').style.display = 'none';
 
   requestWakeLock();
   ensureAudioCtx();
+  initStoryPlayer();
 
   trainingState.currentPhase = 0;
   updatePhaseBar(0);
@@ -155,6 +157,7 @@ function pauseTraining() {
   clearInterval(trainingState.metronomeTimer);
   clearInterval(trainingState.countdownTimer);
   stopPhase1Osc();
+  pauseStoryPlayer();
   updateStartButton();
   speak('训练暂停', 'pause');
   document.getElementById('trainingStatus').textContent = '已暂停';
@@ -164,6 +167,7 @@ function resumeTraining() {
   trainingState.isPaused = false;
   startMetronome();
   startCountdown();
+  resumeStoryPlayer();
   updateStartButton();
   document.getElementById('trainingStatus').textContent = getPhaseName(trainingState.currentPhase);
 }
@@ -178,6 +182,7 @@ function stopTraining(completed) {
   stopPhase1Osc();
   vibrateOff();
   stopSpeaking();
+  stopStoryPlayer();
   releaseWakeLock();
 
   document.getElementById('emergencyBtn').style.display = 'none';
@@ -229,6 +234,10 @@ function startPhase(phase) {
     updatePhaseBar(prevPhase);
     document.getElementById('trainingStatus').textContent = '唤醒准备';
     return;
+  }
+
+  if (prevPhase === 0 && storyPlayerStage === 'training') {
+    startStoryPlayer();
   }
 
   const planData = trainingState._planData;

@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v7';
+const CACHE_VERSION = 'v8';
 const CACHE_STATIC = 'pillow-trainer-static-' + CACHE_VERSION;
 const CACHE_AUDIO = 'pillow-trainer-audio-' + CACHE_VERSION;
 
@@ -12,6 +12,7 @@ const STATIC_ASSETS = [
   './js/vibration.js',
   './js/audio.js',
   './js/speech.js',
+  './js/storyplayer.js',
   './js/settings.js',
   './js/training.js',
   './js/ui.js',
@@ -58,6 +59,22 @@ const AUDIO_ASSETS = [
   './sounds/voices/breath_hold.mp3',
   './sounds/voices/breath_exhale.mp3',
   './sounds/voices/arousal_guide.mp3',
+  './sounds/voices/arousal_stories/story_v3_01.mp3',
+  './sounds/voices/arousal_stories/story_v3_02.mp3',
+  './sounds/voices/arousal_stories/story_v3_03.mp3',
+  './sounds/voices/arousal_stories/story_v3_04.mp3',
+  './sounds/voices/arousal_stories/story_v4_01.mp3',
+  './sounds/voices/arousal_stories/story_v4_02.mp3',
+  './sounds/voices/arousal_stories/story_v4_03.mp3',
+  './sounds/voices/arousal_stories/story_v4_04.mp3',
+  './sounds/voices/arousal_stories/story_v5_01.mp3',
+  './sounds/voices/arousal_stories/story_v5_02.mp3',
+  './sounds/voices/arousal_stories/story_v5_03.mp3',
+  './sounds/voices/arousal_stories/story_v5_04.mp3',
+  './sounds/voices/arousal_stories/story_v6_01.mp3',
+  './sounds/voices/arousal_stories/story_v6_02.mp3',
+  './sounds/voices/arousal_stories/story_v6_03.mp3',
+  './sounds/voices/arousal_stories/story_v6_04.mp3',
 ];
 
 function isAudioRequest(url) {

@@ -32,7 +32,7 @@ function navigateTo(page) {
 
   if (currentPage === 'training' && page !== 'training') {
     stopArousalMetronome();
-    stopArousalVoice();
+    stopStoryPlayer();
   }
 
   currentPage = page;

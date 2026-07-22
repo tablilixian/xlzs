@@ -6,6 +6,11 @@ const DEFAULT_SETTINGS = {
   voiceSpeed: 1.0,
   voiceDensity: 'cycle',
   level: 'beginner',
+  storyPlayerEnabled: true,
+  storyPlayerVolume: 0.5,
+  storyPlayerMode: 'shuffle',
+  storyPlayerStage: 'all',
+  storyPlayerDuckAmount: 0.7,
   voiceOn: {
     coachOpen: true,
     pause: true,

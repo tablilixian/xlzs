@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="训练助手 - 专属私密训练站">
 <link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="css/style.css?v=20260723">
+<link rel="stylesheet" href="css/style.css?v=20260724">
 <title>训练助手</title>
 </head>
 <body>
@@ -238,10 +238,17 @@
           停止训练
         </button>
       </div>
+      <div class="story-player-indicator" id="storyPlayerIndicator" style="display:none">
+        <span class="story-player-title" id="storyPlayerTitle"></span>
+      </div>
       <div class="controls" id="extraControls" style="display:none">
         <button class="btn btn-ghost btn-full" onclick="toggleVoiceCoach()">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
           <span id="voiceBtnText">语音教练</span>
+        </button>
+        <button class="btn btn-ghost btn-full" onclick="toggleStoryPlayer()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8" fill="currentColor"></polygon></svg>
+          <span id="storyBtnText">背景故事</span>
         </button>
         <button class="btn btn-ghost btn-full" onclick="toggleVibration()">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h4l3-9 4 18 3-9h6"></path></svg>
@@ -458,6 +465,52 @@
 
     <div class="setting-group collapsible">
       <div class="setting-group-header" onclick="toggleSettingGroup(this)">
+        <span class="setting-group-title">🎧 背景故事</span>
+        <span class="setting-group-arrow">▼</span>
+      </div>
+      <div class="setting-group-content">
+        <div class="setting-item">
+          <label>背景故事开关</label>
+          <button class="toggle on" id="toggleStoryPlayer" onclick="toggleSettingSwitch(this)"></button>
+        </div>
+        <div class="setting-item" style="flex-direction:column;align-items:flex-start">
+          <label>故事音量</label>
+          <div style="width:100%;display:flex;align-items:center;margin-top:0.5rem">
+            <span style="font-size:0.7rem;color:var(--muted)">0%</span>
+            <input type="range" id="setStoryVolume" min="0" max="1.0" step="0.05" value="0.5" oninput="document.getElementById('storyVolumeDisplay').textContent = Math.round(this.value*100) + '%'; setStoryPlayerVolume(parseFloat(this.value))" style="flex:1;margin:0 0.5rem">
+            <span style="font-size:0.7rem;color:var(--muted)">100%</span>
+          </div>
+          <div style="font-size:0.8rem;color:var(--accent);margin-top:0.25rem" id="storyVolumeDisplay">50%</div>
+        </div>
+        <div class="setting-item" style="flex-direction:column;align-items:flex-start">
+          <label>播放顺序</label>
+          <div class="config-options" style="width:100%;margin-top:0.5rem">
+            <button class="config-btn config-btn-sm story-mode-btn active" data-mode="shuffle" onclick="selectStoryMode('shuffle')">随机</button>
+            <button class="config-btn config-btn-sm story-mode-btn" data-mode="sequential" onclick="selectStoryMode('sequential')">顺序</button>
+          </div>
+        </div>
+        <div class="setting-item" style="flex-direction:column;align-items:flex-start">
+          <label>播放阶段</label>
+          <div class="config-options" style="width:100%;margin-top:0.5rem">
+            <button class="config-btn config-btn-sm story-stage-btn active" data-stage="all" onclick="selectStoryStage('all')">全阶段</button>
+            <button class="config-btn config-btn-sm story-stage-btn" data-stage="prep" onclick="selectStoryStage('prep')">仅唤醒</button>
+            <button class="config-btn config-btn-sm story-stage-btn" data-stage="training" onclick="selectStoryStage('training')">仅训练</button>
+          </div>
+        </div>
+        <div class="setting-item" style="flex-direction:column;align-items:flex-start">
+          <label>闪避强度（语音指令时故事音量降低比例）</label>
+          <div style="width:100%;display:flex;align-items:center;margin-top:0.5rem">
+            <span style="font-size:0.7rem;color:var(--muted)">0%</span>
+            <input type="range" id="setStoryDuck" min="0" max="1.0" step="0.05" value="0.7" oninput="document.getElementById('storyDuckDisplay').textContent = Math.round(this.value*100) + '%'; setStoryPlayerDuckAmount(parseFloat(this.value))" style="flex:1;margin:0 0.5rem">
+            <span style="font-size:0.7rem;color:var(--muted)">100%</span>
+          </div>
+          <div style="font-size:0.8rem;color:var(--accent);margin-top:0.25rem" id="storyDuckDisplay">70%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="setting-group collapsible">
+      <div class="setting-group-header" onclick="toggleSettingGroup(this)">
         <span class="setting-group-title">🗣️ 语音提示开关</span>
         <span class="setting-group-arrow">▼</span>
       </div>
@@ -624,19 +677,20 @@
 </div>
 
 <!-- ==================== Scripts (loaded in dependency order) ==================== -->
-<script src="js/storage.js?v=20260723"></script>
-<script src="js/plans.js?v=20260723"></script>
-<script src="js/vibration.js?v=20260723"></script>
-<script src="js/audio.js?v=20260723"></script>
-<script src="js/speech.js?v=20260723"></script>
-<script src="js/settings.js?v=20260723"></script>
-<script src="js/training.js?v=20260723"></script>
-<script src="js/ui.js?v=20260723"></script>
-<script src="js/arousal.js?v=20260723"></script>
-<script src="js/pages/dashboard.js?v=20260723"></script>
-<script src="js/pages/training.js?v=20260723"></script>
-<script src="js/pages/knowledge.js?v=20260723"></script>
-<script src="js/pages/analysis.js?v=20260723"></script>
-<script src="js/app.js?v=20260723"></script>
+<script src="js/storage.js?v=20260724"></script>
+<script src="js/plans.js?v=20260724"></script>
+<script src="js/vibration.js?v=20260724"></script>
+<script src="js/audio.js?v=20260724"></script>
+<script src="js/speech.js?v=20260724"></script>
+<script src="js/storyplayer.js?v=20260724"></script>
+<script src="js/settings.js?v=20260724"></script>
+<script src="js/training.js?v=20260724"></script>
+<script src="js/ui.js?v=20260724"></script>
+<script src="js/arousal.js?v=20260724"></script>
+<script src="js/pages/dashboard.js?v=20260724"></script>
+<script src="js/pages/training.js?v=20260724"></script>
+<script src="js/pages/knowledge.js?v=20260724"></script>
+<script src="js/pages/analysis.js?v=20260724"></script>
+<script src="js/app.js?v=20260724"></script>
 </body>
 </html>

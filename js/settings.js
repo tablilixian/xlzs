@@ -20,12 +20,21 @@ function saveSettings() {
   s.vibIntensity = parseInt(document.getElementById('setVibIntensity').value) || 2;
   s.voiceDensity = document.querySelector('.density-btn.active')?.dataset?.density || 'cycle';
 
+  s.storyPlayerEnabled = document.getElementById('toggleStoryPlayer').classList.contains('on');
+  s.storyPlayerVolume = parseFloat(document.getElementById('setStoryVolume').value) || 0.5;
+  s.storyPlayerDuckAmount = parseFloat(document.getElementById('setStoryDuck').value) || 0.7;
+  var modeBtn = document.querySelector('.story-mode-btn.active');
+  s.storyPlayerMode = modeBtn ? modeBtn.dataset.mode : 'shuffle';
+  var stageBtn = document.querySelector('.story-stage-btn.active');
+  s.storyPlayerStage = stageBtn ? stageBtn.dataset.stage : 'all';
+
   VOICE_PROMPTS.forEach(p => {
     const toggleEl = document.getElementById('vp_toggle_' + p.key);
     if (toggleEl) s.voiceOn[p.key] = toggleEl.classList.contains('on');
   });
 
   Storage.set('settings', s);
+  initStoryPlayer();
   showToast('设置已保存');
 }
 
@@ -59,6 +68,33 @@ function populateSettings() {
   const density = s.voiceDensity || 'cycle';
   document.querySelectorAll('.density-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.density === density);
+  });
+
+  var storyToggle = document.getElementById('toggleStoryPlayer');
+  if (storyToggle) storyToggle.classList.toggle('on', s.storyPlayerEnabled !== false);
+
+  var volSlider = document.getElementById('setStoryVolume');
+  if (volSlider) {
+    volSlider.value = s.storyPlayerVolume !== undefined ? s.storyPlayerVolume : 0.5;
+    var disp = document.getElementById('storyVolumeDisplay');
+    if (disp) disp.textContent = Math.round(s.storyPlayerVolume * 100) + '%';
+  }
+
+  var duckSlider = document.getElementById('setStoryDuck');
+  if (duckSlider) {
+    duckSlider.value = s.storyPlayerDuckAmount !== undefined ? s.storyPlayerDuckAmount : 0.7;
+    var ddisp = document.getElementById('storyDuckDisplay');
+    if (ddisp) ddisp.textContent = Math.round(s.storyPlayerDuckAmount * 100) + '%';
+  }
+
+  var mode = s.storyPlayerMode || 'shuffle';
+  document.querySelectorAll('.story-mode-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
+
+  var stage = s.storyPlayerStage || 'all';
+  document.querySelectorAll('.story-stage-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.stage === stage);
   });
 
   renderVoicePrompts();
@@ -96,6 +132,22 @@ function renderVoicePrompts() {
     `;
     container.appendChild(div);
   });
+}
+
+function selectStoryMode(mode) {
+  document.querySelectorAll('.story-mode-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
+  setStoryPlayerMode(mode);
+  saveSettings();
+}
+
+function selectStoryStage(stage) {
+  document.querySelectorAll('.story-stage-btn').forEach(function(b) {
+    b.classList.toggle('active', b.dataset.stage === stage);
+  });
+  setStoryPlayerStage(stage);
+  saveSettings();
 }
 
 function loadCustomPlans() {

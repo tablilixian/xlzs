@@ -2,6 +2,7 @@ let voiceCoachEnabled = false;
 const voiceQueue = [];
 let isPlaying = false;
 let currentAudio = null;
+window.__speechPlaying = false;
 
 const VOICE_FILE_MAP = {
   coachOpen: 'coachOpen.mp3',
@@ -114,10 +115,12 @@ function processVoiceQueue() {
   if (isPlaying || voiceQueue.length === 0) return;
   
   isPlaying = true;
+  window.__speechPlaying = true;
   const item = voiceQueue.shift();
   
   playAudioFile(item.filePath).then(() => {
     isPlaying = false;
+    window.__speechPlaying = false;
     processVoiceQueue();
   });
 }
@@ -129,6 +132,7 @@ function stopSpeaking() {
     currentAudio = null;
   }
   isPlaying = false;
+  window.__speechPlaying = false;
 }
 
 function toggleVoiceCoach() {
