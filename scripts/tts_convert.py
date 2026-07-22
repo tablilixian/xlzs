@@ -30,7 +30,7 @@ TTS_MODEL = "tts-1"
 TTS_VOICE = "zh-CN-XiaoxiaoNeural"
 TTS_SPEED = 0.95
 OUTPUT_DIR = Path("/Users/wl/Desktop/job/learn/xlzs/sounds/voices/arousal_stories")
-MAX_CHUNK_CHARS = 180
+MAX_CHUNK_CHARS = 250
 MAX_RETRIES = 5
 RETRY_DELAY = 2
 
@@ -45,6 +45,16 @@ STORY_FILES = [
     ("v4", "/Users/wl/Desktop/job/learn/xlzs/docs/arousal_stories_v4.md"),
     ("v5", "/Users/wl/Desktop/job/learn/xlzs/docs/arousal_stories_v5.md"),
     ("v6", "/Users/wl/Desktop/job/learn/xlzs/docs/arousal_stories_v6.md"),
+    ("v7", "/Users/wl/Desktop/job/learn/xlzs/docs/arousal_stories_v7.md"),
+    ("v8", "/Users/wl/Desktop/job/learn/xlzs/docs/arousal_stories_v8.md"),
+    ("v9", "/Users/wl/Desktop/job/learn/xlzs/docs/arousal_stories_v9.md"),
+    ("v10", "/Users/wl/Desktop/job/learn/xlzs/docs/arousal_stories_v10.md"),
+    ("v11", "/Users/wl/Desktop/job/learn/xlzs/docs/arousal_stories_v11.md"),
+    ("v12", "/Users/wl/Desktop/job/learn/xlzs/docs/arousal_stories_v12.md"),
+    ("v13", "/Users/wl/Desktop/job/learn/xlzs/docs/arousal_stories_v13.md"),
+    ("v14", "/Users/wl/Desktop/job/learn/xlzs/docs/arousal_stories_v14.md"),
+    ("v15", "/Users/wl/Desktop/job/learn/xlzs/docs/arousal_stories_v15.md"),
+    ("v16", "/Users/wl/Desktop/job/learn/xlzs/docs/arousal_stories_v16.md"),
 ]
 
 
@@ -201,7 +211,7 @@ def process_story(version_tag, story_idx, title, text):
             cmd = [
                 ffmpeg, "-y", "-f", "concat", "-safe", "0",
                 "-i", str(list_path),
-                "-c", "libmp3lame", "-b:a", "64k",
+                "-c", "libmp3lame", "-b:a", "48k", "-ar", "22050",
                 str(filepath)
             ]
             subprocess.run(cmd, capture_output=True, check=True)
