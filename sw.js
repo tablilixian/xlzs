@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v6';
+const CACHE_VERSION = 'v7';
 const CACHE_STATIC = 'pillow-trainer-static-' + CACHE_VERSION;
 const CACHE_AUDIO = 'pillow-trainer-audio-' + CACHE_VERSION;
 
