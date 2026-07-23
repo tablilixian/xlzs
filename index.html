@@ -618,6 +618,42 @@
     </div>
   </div>
 
+  <!-- ==================== Page: Stories ==================== -->
+  <div class="page" id="page-stories">
+    <div class="page-header">
+      <h1>📖 故事集</h1>
+      <span class="page-subtitle">毕业旅行 · 五对情侣 · 七天两千公里</span>
+    </div>
+    <div id="storiesListView">
+      <div class="stories-intro">
+        <p>刚毕业的大学生，五对情侣，租了一辆九座车，出发去草原——七天，两千公里。所有人都很熟——同班四年，谁追的谁、谁甩过谁、谁暗恋过谁，彼此心里都有数。没人装纯。来这趟旅行的人都知道会发生什么。</p>
+      </div>
+      <div id="storiesContent"></div>
+    </div>
+    <div id="storyReaderView" style="display:none">
+      <div class="story-reader-header">
+        <button class="btn btn-ghost btn-sm" onclick="closeStoryReader()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          返回目录
+        </button>
+        <div class="story-reader-nav">
+          <button class="btn btn-ghost btn-sm" id="prevStoryBtn" onclick="prevStory()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            上一章
+          </button>
+          <button class="btn btn-ghost btn-sm" id="nextStoryBtn" onclick="nextStory()">
+            下一章
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+      </div>
+      <div class="story-reader-title" id="storyReaderTitle"></div>
+      <div class="story-reader-content" id="storyReaderContent">
+        <div class="story-loading">选择一章开始阅读</div>
+      </div>
+    </div>
+  </div>
+
   <!-- ==================== Exit Confirm Modal ==================== -->
   <div class="modal-overlay" id="exitConfirmModal" style="display:none" onclick="closeExitConfirm(event)">
     <div class="modal-box" onclick="event.stopPropagation()">
@@ -664,6 +700,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
       <span>知识库</span>
     </button>
+    <button class="nav-item" onclick="navigateTo('stories')" data-page="stories">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+      <span>故事</span>
+    </button>
     <button class="nav-item" onclick="navigateTo('settings')" data-page="settings">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
       <span>设置</span>
@@ -699,6 +739,8 @@
 <script src="js/pages/training.js?v=20260725"></script>
 <script src="js/pages/knowledge.js?v=20260725"></script>
 <script src="js/pages/analysis.js?v=20260725"></script>
+<script src="js/stories-data.js?v=20260725"></script>
+<script src="js/pages/stories.js?v=20260725"></script>
 <script src="js/app.js?v=20260725"></script>
 </body>
 </html>

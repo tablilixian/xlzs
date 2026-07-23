@@ -51,6 +51,7 @@ function navigateTo(page) {
   if (page === 'training') initTraining();
   if (page === 'dashboard') refreshDashboard();
   if (page === 'analysis') refreshAnalysis();
+  if (page === 'stories') renderStoriesPage();
 }
 
 function exportData() {

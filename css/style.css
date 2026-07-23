@@ -1178,3 +1178,134 @@ a { color: var(--accent); text-decoration: none; }
 @media (prefers-reduced-motion: reduce) {
   .arousal-beat, .mini-beat-dot, .ring-progress { transition: none !important; animation: none !important; }
 }
+
+/* ==================== Story Reader ==================== */
+.stories-intro {
+  font-size: 0.85rem; color: var(--muted); line-height: 1.7;
+  margin: 0.5rem 0 1.5rem; padding: 1rem;
+  background: var(--bg2); border-radius: var(--radius);
+  border-left: 3px solid var(--accent);
+}
+.stories-intro p { margin: 0; }
+
+.story-card {
+  display: flex; align-items: stretch; gap: 1rem;
+  padding: 1rem; margin-bottom: 0.75rem;
+  background: var(--bg2); border-radius: var(--radius);
+  cursor: pointer; transition: all var(--transition);
+  border: 1px solid transparent;
+}
+.story-card:hover { border-color: var(--accent); background: var(--bg3); }
+.story-card:active { transform: scale(0.98); }
+
+.story-card-number {
+  flex-shrink: 0; width: 3rem; display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 700; color: var(--accent);
+  background: rgba(230, 168, 23, 0.1); border-radius: 8px;
+  text-align: center; line-height: 1.3;
+}
+
+.story-card-body { flex: 1; min-width: 0; }
+.story-card-title { font-size: 1rem; font-weight: 600; color: var(--ink); margin-bottom: 0.15rem; }
+.story-card-subtitle { font-size: 0.75rem; color: var(--accent); margin-bottom: 0.4rem; }
+.story-card-preview { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+
+.story-card-arrow {
+  flex-shrink: 0; display: flex; align-items: center;
+  color: var(--muted); font-size: 1.2rem; transition: transform var(--transition);
+}
+.story-card:hover .story-card-arrow { transform: translateX(4px); color: var(--accent); }
+
+.story-footer-note {
+  text-align: center; font-size: 0.75rem; color: var(--muted);
+  padding: 2rem 0 0.5rem; opacity: 0.6;
+}
+
+/* Reader View */
+.story-reader-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.75rem 0; gap: 0.5rem; flex-wrap: wrap;
+}
+.story-reader-header .btn-ghost svg { vertical-align: middle; }
+.story-reader-nav { display: flex; gap: 0.5rem; }
+.story-reader-nav .btn-ghost { display: flex; align-items: center; gap: 0.25rem; }
+
+.story-reader-title {
+  font-size: 1.3rem; font-weight: 700; color: var(--accent);
+  padding: 0.75rem 0 0.5rem; border-bottom: 1px solid var(--bg3);
+  margin-bottom: 1rem; line-height: 1.4;
+}
+
+.story-reader-content {
+  line-height: 1.9; font-size: 0.95rem; color: var(--ink);
+  padding-bottom: 3rem; min-height: 40vh;
+}
+
+.story-reader-content .story-para { margin: 0.6em 0; text-indent: 2em; }
+.story-reader-content .story-para-break { height: 0.4em; }
+
+.story-reader-content .story-h2 {
+  font-size: 1.15rem; font-weight: 700; color: var(--accent);
+  margin: 1.5em 0 0.5em; text-indent: 0;
+}
+.story-reader-content .story-h3 {
+  font-size: 1.05rem; font-weight: 600; color: var(--ink);
+  margin: 1.2em 0 0.4em; text-indent: 0;
+}
+.story-reader-content .story-h4 {
+  font-size: 0.95rem; font-weight: 600; color: var(--muted);
+  margin: 1em 0 0.3em; text-indent: 0;
+}
+
+.story-reader-content .story-bold-item {
+  margin: 0.5em 0; padding-left: 1em; border-left: 2px solid var(--accent);
+  font-size: 0.92rem; line-height: 1.7;
+}
+
+.story-reader-content .story-hr {
+  border: none; border-top: 1px solid var(--bg3);
+  margin: 1.5em 0;
+}
+
+.story-reader-content .story-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 0.82rem; margin: 1em 0;
+}
+.story-reader-content .story-table th,
+.story-reader-content .story-table td {
+  padding: 0.4rem 0.6rem; border: 1px solid var(--bg3);
+  text-align: left;
+}
+.story-reader-content .story-table th {
+  background: var(--bg2); color: var(--accent); font-weight: 600;
+}
+
+.story-reader-content strong { color: var(--accent); }
+.story-reader-content code {
+  background: var(--bg2); padding: 0.1em 0.4em; border-radius: 4px;
+  font-size: 0.85em; color: var(--accent);
+}
+
+.story-loading {
+  text-align: center; color: var(--muted); padding: 3rem 0;
+  font-size: 0.9rem;
+}
+
+.story-error {
+  text-align: center; color: var(--danger); padding: 2rem 1rem;
+  font-size: 0.85rem; line-height: 1.6;
+}
+.story-error code {
+  background: rgba(178,34,34,0.1); padding: 0.1em 0.4em;
+  border-radius: 4px; font-size: 0.85em;
+}
+
+@media (max-width: 360px) {
+  .story-card-number { width: 2.5rem; font-size: 0.65rem; }
+  .story-card-title { font-size: 0.9rem; }
+  .story-reader-title { font-size: 1.1rem; }
+  .story-reader-content { font-size: 0.88rem; }
+}
+
+/* override .page padding for stories reader if no bottom nav covering issue */
+#page-stories { padding-bottom: calc(7rem + env(safe-area-inset-bottom)); }

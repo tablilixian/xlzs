@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v9';
+const CACHE_VERSION = 'v10';
 const CACHE_STATIC = 'pillow-trainer-static-' + CACHE_VERSION;
 const CACHE_AUDIO = 'pillow-trainer-audio-' + CACHE_VERSION;
 
@@ -21,6 +21,8 @@ const STATIC_ASSETS = [
   './js/pages/training.js',
   './js/pages/knowledge.js',
   './js/pages/analysis.js',
+  './js/stories-data.js',
+  './js/pages/stories.js',
   './js/app.js',
 ];
 
