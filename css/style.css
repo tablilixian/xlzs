@@ -1188,9 +1188,23 @@ a { color: var(--accent); text-decoration: none; }
 }
 .stories-intro p { margin: 0; }
 
+/* Category */
+.story-category { margin-bottom: 2rem; }
+.story-category-header {
+  display: flex; flex-direction: column; gap: 0.15rem;
+  margin-bottom: 0.75rem; padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--bg3);
+}
+.story-category-name {
+  font-size: 1rem; font-weight: 700; color: var(--accent);
+}
+.story-category-desc {
+  font-size: 0.75rem; color: var(--muted);
+}
+
 .story-card {
-  display: flex; align-items: stretch; gap: 1rem;
-  padding: 1rem; margin-bottom: 0.75rem;
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.85rem 1rem; margin-bottom: 0.5rem;
   background: var(--bg2); border-radius: var(--radius);
   cursor: pointer; transition: all var(--transition);
   border: 1px solid transparent;
@@ -1198,27 +1212,20 @@ a { color: var(--accent); text-decoration: none; }
 .story-card:hover { border-color: var(--accent); background: var(--bg3); }
 .story-card:active { transform: scale(0.98); }
 
-.story-card-number {
-  flex-shrink: 0; width: 3rem; display: flex; align-items: center; justify-content: center;
-  font-size: 0.75rem; font-weight: 700; color: var(--accent);
-  background: rgba(230, 168, 23, 0.1); border-radius: 8px;
-  text-align: center; line-height: 1.3;
-}
-
 .story-card-body { flex: 1; min-width: 0; }
-.story-card-title { font-size: 1rem; font-weight: 600; color: var(--ink); margin-bottom: 0.15rem; }
-.story-card-subtitle { font-size: 0.75rem; color: var(--accent); margin-bottom: 0.4rem; }
-.story-card-preview { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+.story-card-title { font-size: 0.92rem; font-weight: 600; color: var(--ink); margin-bottom: 0.1rem; }
+.story-card-subtitle { font-size: 0.72rem; color: var(--accent); margin-bottom: 0.3rem; }
+.story-card-preview { font-size: 0.75rem; color: var(--muted); line-height: 1.5; }
 
 .story-card-arrow {
   flex-shrink: 0; display: flex; align-items: center;
-  color: var(--muted); font-size: 1.2rem; transition: transform var(--transition);
+  color: var(--muted); font-size: 1.1rem; transition: transform var(--transition);
 }
 .story-card:hover .story-card-arrow { transform: translateX(4px); color: var(--accent); }
 
 .story-footer-note {
   text-align: center; font-size: 0.75rem; color: var(--muted);
-  padding: 2rem 0 0.5rem; opacity: 0.6;
+  padding: 1rem 0 0.5rem; opacity: 0.5;
 }
 
 /* Reader View */
@@ -1228,52 +1235,68 @@ a { color: var(--accent); text-decoration: none; }
 }
 .story-reader-header .btn-ghost svg { vertical-align: middle; }
 .story-reader-nav { display: flex; gap: 0.5rem; }
-.story-reader-nav .btn-ghost { display: flex; align-items: center; gap: 0.25rem; }
+.story-reader-nav .btn-ghost { display: flex; align-items: center; gap: 0.25rem; font-size: 0.8rem; }
 
 .story-reader-title {
-  font-size: 1.3rem; font-weight: 700; color: var(--accent);
-  padding: 0.75rem 0 0.5rem; border-bottom: 1px solid var(--bg3);
+  font-size: 1.2rem; font-weight: 700; color: var(--accent);
+  padding: 0.5rem 0 0.5rem; border-bottom: 1px solid var(--bg3);
   margin-bottom: 1rem; line-height: 1.4;
 }
 
 .story-reader-content {
-  line-height: 1.9; font-size: 0.95rem; color: var(--ink);
+  line-height: 1.9; font-size: 0.92rem; color: var(--ink);
   padding-bottom: 3rem; min-height: 40vh;
 }
 
-.story-reader-content .story-para { margin: 0.6em 0; text-indent: 2em; }
-.story-reader-content .story-para-break { height: 0.4em; }
+.story-reader-content .story-para { margin: 0.5em 0; }
+.story-reader-content .story-para-break { height: 0.3em; }
 
 .story-reader-content .story-h2 {
-  font-size: 1.15rem; font-weight: 700; color: var(--accent);
-  margin: 1.5em 0 0.5em; text-indent: 0;
+  font-size: 1.1rem; font-weight: 700; color: var(--accent);
+  margin: 1.2em 0 0.4em;
 }
 .story-reader-content .story-h3 {
-  font-size: 1.05rem; font-weight: 600; color: var(--ink);
-  margin: 1.2em 0 0.4em; text-indent: 0;
+  font-size: 1rem; font-weight: 600; color: var(--ink);
+  margin: 1em 0 0.3em;
 }
 .story-reader-content .story-h4 {
-  font-size: 0.95rem; font-weight: 600; color: var(--muted);
-  margin: 1em 0 0.3em; text-indent: 0;
+  font-size: 0.9rem; font-weight: 600; color: var(--muted);
+  margin: 0.8em 0 0.2em;
 }
 
 .story-reader-content .story-bold-item {
-  margin: 0.5em 0; padding-left: 1em; border-left: 2px solid var(--accent);
-  font-size: 0.92rem; line-height: 1.7;
+  margin: 0.4em 0; padding-left: 0.75em; border-left: 2px solid var(--accent);
+  font-size: 0.9rem; line-height: 1.7;
+}
+
+.story-reader-content .story-blockquote {
+  margin: 0.5em 0; padding: 0.4em 0.75em;
+  background: var(--bg2); border-left: 3px solid var(--accent);
+  font-size: 0.88rem; color: var(--muted); line-height: 1.6;
+}
+
+.story-reader-content .story-list-item {
+  margin: 0.3em 0; padding-left: 1.2em;
+  font-size: 0.9rem; line-height: 1.6;
+  position: relative;
+}
+.story-reader-content .story-list-item::before {
+  content: '•'; position: absolute; left: 0.3em;
+  color: var(--accent);
 }
 
 .story-reader-content .story-hr {
   border: none; border-top: 1px solid var(--bg3);
-  margin: 1.5em 0;
+  margin: 1.2em 0;
 }
 
 .story-reader-content .story-table {
   width: 100%; border-collapse: collapse;
-  font-size: 0.82rem; margin: 1em 0;
+  font-size: 0.8rem; margin: 0.8em 0;
 }
 .story-reader-content .story-table th,
 .story-reader-content .story-table td {
-  padding: 0.4rem 0.6rem; border: 1px solid var(--bg3);
+  padding: 0.35rem 0.5rem; border: 1px solid var(--bg3);
   text-align: left;
 }
 .story-reader-content .story-table th {
@@ -1288,7 +1311,7 @@ a { color: var(--accent); text-decoration: none; }
 
 .story-loading {
   text-align: center; color: var(--muted); padding: 3rem 0;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .story-error {
@@ -1301,11 +1324,9 @@ a { color: var(--accent); text-decoration: none; }
 }
 
 @media (max-width: 360px) {
-  .story-card-number { width: 2.5rem; font-size: 0.65rem; }
-  .story-card-title { font-size: 0.9rem; }
-  .story-reader-title { font-size: 1.1rem; }
-  .story-reader-content { font-size: 0.88rem; }
+  .story-card-title { font-size: 0.85rem; }
+  .story-reader-title { font-size: 1.05rem; }
+  .story-reader-content { font-size: 0.85rem; }
 }
 
-/* override .page padding for stories reader if no bottom nav covering issue */
 #page-stories { padding-bottom: calc(7rem + env(safe-area-inset-bottom)); }

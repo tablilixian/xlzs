@@ -1,6 +1,7 @@
 // ==================== Story Reader Page ====================
 let _currentStoryId = null;
 let _loadedCache = {};
+let _currentNavIndex = -1; // index in flat STORIES_INDEX
 
 function renderStoriesPage() {
   const container = document.getElementById('storiesContent');
@@ -12,31 +13,35 @@ function renderStoriesPage() {
 
   let html = '';
 
-  // build chapter index
-  STORIES_INDEX.forEach((story, i) => {
-    const previewText = story.preview.length > 120
-      ? story.preview.slice(0, 120) + '…'
-      : story.preview;
-    const chapterLabel = story.id === '00' ? '开篇' : '第 ' + story.id.replace(/^0/, '') + ' 章';
+  STORIES_CATEGORIES.forEach((cat, ci) => {
     html += `
-      <div class="story-card" onclick="openStory('${story.id}')">
-        <div class="story-card-number">${chapterLabel}</div>
-        <div class="story-card-body">
-          <div class="story-card-title">${story.title}</div>
-          <div class="story-card-subtitle">${story.subtitle}</div>
-          <div class="story-card-preview">${escapeHtml(previewText)}</div>
+      <div class="story-category">
+        <div class="story-category-header">
+          <span class="story-category-name">${cat.name}</span>
+          <span class="story-category-desc">${cat.desc}</span>
         </div>
-        <div class="story-card-arrow">→</div>
-      </div>
     `;
+
+    cat.stories.forEach(story => {
+      const previewText = story.preview.length > 100
+        ? story.preview.slice(0, 100) + '…'
+        : story.preview;
+      html += `
+        <div class="story-card" onclick="openStory('${story.id}')">
+          <div class="story-card-body">
+            <div class="story-card-title">${story.title}</div>
+            <div class="story-card-subtitle">${story.subtitle}</div>
+            <div class="story-card-preview">${escapeHtml(previewText)}</div>
+          </div>
+          <div class="story-card-arrow">→</div>
+        </div>
+      `;
+    });
+
+    html += `</div>`;
   });
 
-  html += `
-    <div class="story-footer-note">
-      毕业旅行 · 五对情侣 · 七个昼夜<br>
-      持续更新中
-    </div>
-  `;
+  html += `<div class="story-footer-note">持续更新中</div>`;
 
   container.innerHTML = html;
 }
@@ -46,16 +51,17 @@ function openStory(storyId) {
   if (!story) return;
 
   _currentStoryId = storyId;
+  _currentNavIndex = STORIES_INDEX.findIndex(s => s.id === storyId);
 
-  // show reader, hide list
   document.getElementById('storiesListView').style.display = 'none';
   document.getElementById('storyReaderView').style.display = 'block';
 
-  // set title
-  const chapterLabel = story.id === '00' ? '开篇' : '第 ' + story.id.replace(/^0/, '') + ' 章';
-  document.getElementById('storyReaderTitle').textContent = chapterLabel + ' · ' + story.title;
+  document.getElementById('storyReaderTitle').textContent = story.title;
 
-  // load content
+  // update nav buttons
+  document.getElementById('prevStoryBtn').style.visibility = _currentNavIndex > 0 ? 'visible' : 'hidden';
+  document.getElementById('nextStoryBtn').style.visibility = _currentNavIndex < STORIES_INDEX.length - 1 ? 'visible' : 'hidden';
+
   const contentEl = document.getElementById('storyReaderContent');
   contentEl.innerHTML = '<div class="story-loading">加载中…</div>';
 
@@ -87,19 +93,16 @@ function renderStoryContent(el, markdownText) {
     const line = lines[i];
     const trimmed = line.trim();
 
-    // skip empty lines (will use paragraph breaks instead)
     if (trimmed === '') {
       html += '<div class="story-para-break"></div>';
       continue;
     }
 
-    // horizontal rule
     if (trimmed === '---' || trimmed === '___') {
       html += '<hr class="story-hr">';
       continue;
     }
 
-    // table row (simple detection)
     if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
       if (!inTable) {
         html += '<table class="story-table">';
@@ -114,9 +117,7 @@ function renderStoryContent(el, markdownText) {
         html += `<${tag}>${clean}</${tag}>`;
       });
       html += '</tr>';
-      if (isHeader) {
-        i++; // skip the separator line
-      }
+      if (isHeader) i++;
       continue;
     }
 
@@ -125,7 +126,6 @@ function renderStoryContent(el, markdownText) {
       inTable = false;
     }
 
-    // headings
     const hMatch = trimmed.match(/^(#{1,4})\s+(.+)/);
     if (hMatch) {
       const level = hMatch[1].length;
@@ -134,20 +134,29 @@ function renderStoryContent(el, markdownText) {
       continue;
     }
 
-    // bold list items: **text** — description
-    const boldListItem = trimmed.match(/^\*\*(.+?)\*\*(.+)?/);
+    // blockquote: > text
+    if (trimmed.startsWith('> ')) {
+      html += `<div class="story-blockquote">${inlineMarkdown(trimmed.slice(2))}</div>`;
+      continue;
+    }
+
+    const boldListItem = trimmed.match(/^\*\*(.+?)\*\*(.+)/);
     if (boldListItem) {
       const bold = inlineMarkdown(boldListItem[1]);
-      const rest = boldListItem[2] ? inlineMarkdown(boldListItem[2]) : '';
+      const rest = inlineMarkdown(boldListItem[2]);
       html += `<div class="story-bold-item"><strong>${bold}</strong>${rest}</div>`;
       continue;
     }
 
-    // regular paragraph
+    // bullet list item
+    if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+      html += `<div class="story-list-item">${inlineMarkdown(trimmed.slice(2))}</div>`;
+      continue;
+    }
+
     html += `<p class="story-para">${inlineMarkdown(trimmed)}</p>`;
   }
 
-  // close table if still open
   if (inTable) html += '</table>';
 
   el.innerHTML = html;
@@ -161,34 +170,25 @@ function closeStoryReader() {
 }
 
 function nextStory() {
-  if (!_currentStoryId) return;
-  const idx = STORIES_INDEX.findIndex(s => s.id === _currentStoryId);
-  if (idx < STORIES_INDEX.length - 1) {
-    openStory(STORIES_INDEX[idx + 1].id);
+  if (_currentNavIndex < STORIES_INDEX.length - 1) {
+    openStory(STORIES_INDEX[_currentNavIndex + 1].id);
   }
 }
 
 function prevStory() {
-  if (!_currentStoryId) return;
-  const idx = STORIES_INDEX.findIndex(s => s.id === _currentStoryId);
-  if (idx > 0) {
-    openStory(STORIES_INDEX[idx - 1].id);
+  if (_currentNavIndex > 0) {
+    openStory(STORIES_INDEX[_currentNavIndex - 1].id);
   }
 }
 
 // ==================== Helpers ====================
 function inlineMarkdown(text) {
   let t = text;
-
-  // bold: **text**
   t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-
-  // escape HTML entities
+  // inline code before html escape
+  t = t.replace(/`([^`]+)`/g, '\x00CODE:$1\x00');
   t = escapeHtml(t);
-
-  // inline code
-  t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
-
+  t = t.replace(/\x00CODE:([^]+?)\x00/g, '<code>$1</code>');
   return t;
 }
 
