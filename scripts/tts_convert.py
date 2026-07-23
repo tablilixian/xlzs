@@ -163,7 +163,7 @@ def tts_speech(text, idx, total_chunks, story_name):
 def process_story(version_tag, story_idx, title, text):
     """Convert one story to audio file. Returns (filename, success)."""
     safe_title = re.sub(r'[^\w\u4e00-\u9fff]', '_', title)[:30]
-    filename = f"story_{version_tag}_{story_idx:02d}.mp3"
+    filename = f"story_{version_tag}_{story_idx:02d}.opus"
     filepath = OUTPUT_DIR / filename
     temp_dir = OUTPUT_DIR / f"temp_{version_tag}_{story_idx:02d}"
     temp_dir.mkdir(exist_ok=True)
@@ -211,7 +211,8 @@ def process_story(version_tag, story_idx, title, text):
             cmd = [
                 ffmpeg, "-y", "-f", "concat", "-safe", "0",
                 "-i", str(list_path),
-                "-c", "libmp3lame", "-b:a", "48k", "-ar", "22050",
+                "-c:a", "libopus", "-b:a", "24k", "-ar", "24000",
+                "-vbr", "on",
                 str(filepath)
             ]
             subprocess.run(cmd, capture_output=True, check=True)
