@@ -12,6 +12,93 @@ var storyPlayerNormalVolume = 0.5;
 var storyPlayerDuckCheckTimer = null;
 var storyPlayerTitleEl = null;
 
+var STORY_DESC = [
+  // ── v3 基础唤醒 ──
+  '温柔的指令引导你从放松到完全勃起，感受每一次呼吸和脉搏',
+  '扮演办公室里的下级，被女上司用语言羞辱和命令控制你的高潮',
+  '清晨被窝里的身体唤醒，从第一缕阳光开始慢慢点燃你的欲望',
+  '浴室蒸汽中的触觉幻想，水声和温度编织出一场自慰的序曲',
+  // ── v4 角色扮演 ──
+  '年轻女老师课后把你留在教室，用教鞭和命令让你无法自拔',
+  '夜店里陌生女人的手从桌下伸过来，在音乐和酒精中挑衅你的底线',
+  '按摩床上你被蒙住眼睛，她的手指和精油让你完全失去控制',
+  '商场更衣室里导购小姐拉上帘子，说这件衣服需要「试穿」一下',
+  // ── v5 禁忌身份 ──
+  '你的妻子就在门外排队，而诊室里的护士说你必须「勃起检查」',
+  '你最信任的女闺蜜说「你女朋友让我来照顾你——在床上照顾」',
+  '高中同学会上当年的文静女生问你「那年在天台你没做完的事还记得吗」',
+  '大明星的私人化妆间里她说「你配不上我——但我允许你幻想」',
+  // ── v6 综艺专题 ──
+  '你被带上夫妻交换综艺，抽签选中了别人老婆，摄像机全程记录',
+  '你参加了一个交换派对，门推开后看到你老婆正在对面房间的床上',
+  '新婚旅行妻子在隔壁房间睡着了，你走错门进了她闺蜜的房间',
+  '蜜月酒店的阳台连着隔壁房间，你听到的声音让你无法入睡',
+  // ── v7 极限禁忌 ──
+  '你和你妻子被选中参加一档夫妻交换综艺，主持人全程现场解说',
+  '你被绑在调教椅上，女调教师命令你今晚无论如何都不许射',
+  '你看着自己的妻子被别的男人调教，而她脸上的表情你从未见过',
+  '女按摩师的手指探入你的禁忌地带，说「放松——你逃不掉的」',
+  // ── v8 九大性癖 ──
+  '你在咖啡馆开会，她坐在对面用手机控制着你体内的遥控玩具',
+  '你被锁上了贞操锁，钥匙挂在她脖子上说「想射的时候求我」',
+  '你被蒙着眼睛躺在床上，不知道今晚排队等着用你的到底有几个人',
+  '你被同时进入前后两个洞，前后夹击的快感让你连求饶都说不完整',
+  '他站在你面前脱下裤子，她让你比较「看清楚——谁才是男人」',
+  '你被要求全身赤裸站在落地窗前，窗外是车水马龙的城市夜景',
+  '你戴上了VR头盔，眼前的女人让你分不清是现实还是幻觉',
+  '产后两个月她涨奶的时候最敏感，你说「别浪费——让我来吸」',
+  '她穿着黑丝和高跟鞋用大腿夹着你，说「你今天只准碰这里」',
+  // ── v9 场景系列上 ──
+  '你在试衣间里刚脱了衣服，帘子被掀开——隔壁试衣间的少妇走了进来',
+  '冰块在你胸口融化，她含了一口热水含住了你——冰与火的交替让你发疯',
+  '姐姐刚走妹妹就进来了，她说「我姐说你很厉害——我不信」',
+  '公司团建你被女同事灌了半瓶白酒，醒来的时候发现鸡吧上坐着人',
+  // ── v10 场景系列下 ──
+  '你在图书馆自习，对面的女生的脚从桌子下面伸了过来',
+  '你老公举着手机说「拍清楚一点——我要让兄弟们看看你老婆有多骚」',
+  '你老婆怀孕五个月了躺在她自己的床上，而你正在隔壁房间里肏她妹妹',
+  '结婚三年的老婆第一次和别的男人做，事后她趴在你胸口说「他比你大」',
+  // ── v11 绿帽系列上 ──
+  '你最好的哥们出差让你「照顾」他老婆——你照顾到她床上去了',
+  '老板今天在公司骂了你——你记住了他家的地址和他老婆的微信',
+  '对门少妇穿着吊带睡裙来敲门说水管坏了——你修了水管也修了她',
+  '十年同学聚会当年的班花喝多了，她说「老公从来不能满足我」',
+  '健身房里那个穿瑜伽裤的少妇让你教她用器材——器材是你的鸡吧',
+  '凌晨两点她上了你的网约车，老公在电话里骂她——她挂了说「你随便开」',
+  // ── v12 绿帽系列中 ──
+  '新娘在敬酒，伴娘在阳台蹲在你面前——「新郎不行，你看起来比他行」',
+  '你老婆住院了，隔壁床少妇的老公从来没来过——她通宵陪你「聊天」',
+  '你上门送快递也上门送精，开门的人妻穿着真丝睡袍说「进来吧老公不在」',
+  '你最好的兄弟是刑警今晚抓逃犯去了，他老婆一个人在家「害怕」',
+  '带客户看精装公寓她说「姐今天签了你的单——你先让姐签了你」',
+  // ── v13 露出系列 ──
+  '午夜场最后一排她在你腿上慢慢坐了下去——前面三排还坐着一个大叔',
+  '你在泳池更衣室冲澡帘子没拉严——隔壁的女人进来了站定没走',
+  '你说今晚不关窗也不拉帘——对面楼十几扇窗户后面都亮着灯',
+  '季度总结会你在讲PPT，她在桌子下面解开了你西裤的拉链',
+  '你把她拉进高铁卫生间没锁门——外面有人拧了两下门把手',
+  '自驾游拐进服务区最远的角落停在一排大货车后面——车在晃',
+  '八楼天台围栏齐腰，楼下夜市全是人——你让她趴着围栏从后面进入',
+  // ── v14 女主动上 ──
+  '你认识了十二年的短发女闺蜜喝多了把你按在沙发上「今晚你是女的」',
+  '当年追了半年没追到的大学女同学开着保时捷来参加聚会',
+  '新来的美女总监说「我看了你面试照片三秒就决定录用你了」',
+  '你的私人女教练说「最近表现不错——做完这组我奖励你」',
+  '你在直播间刷了好几个月礼物的女主播说「线下见面你要听我的」',
+  // ── v15 女主动中 ──
+  '分手五年的初恋发短信说明天我结婚——今晚你是我最后一次',
+  '楼上的离婚女人说「弟弟你帮我那么多次——姐姐应该回报你一下」',
+  '退伍回来的女朋友体能比你好，你把她的手腕按在头顶三秒被她反制',
+  '你挂的男科——诊室里坐着一个女医生，她戴着手套托起了你的鸡吧',
+  '酒吧里她直接把手放在你大腿上说「我十二点飞机——你行还是不行」',
+  // ── v16 女主动下 ──
+  '你是她瑜伽班里唯一的男学员，课后她让所有人走了留下你「补课」',
+  '你骑电动车没戴头盔被一个女警拦了——她给了你微信号',
+  '阿强带你参加富婆饭局，散场时他说「今晚你负责陪李姐」',
+  '你姐出差了让你看家——她的大学室友来借吸尘器顺便借了你',
+  '家里介绍相亲的姑娘第三次约会就来你家，关上门她说「装了一天累死我了」',
+];
+
 var STORY_LIST = [
   // ── v3 基础唤醒 ──
   { title: '撸管引导 · 唤醒', file: 'arousal_stories/story_v3_01.mp3' },
@@ -268,3 +355,136 @@ function stopDuckCheck() {
   }
   storyPlayerDucked = false;
 }
+
+// ── Story Playlist Browser ──
+function openStoryPlaylist() {
+  var existing = document.getElementById('storyPlaylistOverlay');
+  if (existing) existing.style.display = '';
+  else buildStoryPlaylist();
+}
+
+function closeStoryPlaylist() {
+  var el = document.getElementById('storyPlaylistOverlay');
+  if (el) el.style.display = 'none';
+}
+
+function buildStoryPlaylist() {
+  var overlay = document.createElement('div');
+  overlay.className = 'custom-panel-overlay';
+  overlay.id = 'storyPlaylistOverlay';
+  overlay.onclick = function(e) { if (e.target === overlay) closeStoryPlaylist(); };
+
+  var panel = document.createElement('div');
+  panel.className = 'custom-panel';
+  panel.style.maxWidth = '500px';
+  panel.style.maxHeight = '85vh';
+
+  var header = document.createElement('div');
+  header.className = 'custom-panel-header';
+  header.innerHTML = '<h3>📖 故事列表</h3><button class="btn btn-ghost" onclick="closeStoryPlaylist()" style="padding:0.3rem 0.6rem;font-size:1.2rem">✕</button>';
+
+  var body = document.createElement('div');
+  body.style.padding = '0.75rem';
+  body.style.overflowY = 'auto';
+  body.style.maxHeight = 'calc(85vh - 60px)';
+
+  for (var i = 0; i < STORY_LIST.length; i++) {
+    var item = document.createElement('div');
+    item.style.cssText = 'display:flex;align-items:center;padding:0.65rem 0.75rem;border-bottom:1px solid var(--bg3);gap:0.6rem;cursor:pointer;border-radius:var(--radius);transition:background 0.15s';
+    item.onmouseenter = function() { this.style.background = 'var(--bg3)'; };
+    item.onmouseleave = function() { this.style.background = 'transparent'; };
+
+    var idx = i;
+    var playBtn = document.createElement('button');
+    playBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="8 5 19 12 8 19 8 5"/></svg>';
+    playBtn.style.cssText = 'flex-shrink:0;width:36px;height:36px;border-radius:50%;background:var(--accent);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#000';
+    playBtn.onclick = function(i) { return function() { playStoryFromList(i); }; }(idx);
+    playBtn.title = '播放此故事';
+
+    var textWrap = document.createElement('div');
+    textWrap.style.cssText = 'flex:1;min-width:0';
+
+    var title = document.createElement('div');
+    title.style.cssText = 'font-size:0.9rem;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
+    title.textContent = STORY_LIST[i].title;
+
+    var desc = document.createElement('div');
+    desc.style.cssText = 'font-size:0.72rem;color:var(--muted);margin-top:0.15rem;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden';
+    desc.textContent = STORY_DESC[i] || '';
+
+    textWrap.appendChild(title);
+    textWrap.appendChild(desc);
+    item.appendChild(playBtn);
+    item.appendChild(textWrap);
+
+    // Click on item (not play button) also plays
+    item.onclick = (function(i) { return function() { playStoryFromList(i); }; })(idx);
+
+    body.appendChild(item);
+  }
+
+  panel.appendChild(header);
+  panel.appendChild(body);
+  overlay.appendChild(panel);
+  document.body.appendChild(overlay);
+}
+
+function playStoryFromList(idx) {
+  closeStoryPlaylist();
+  var story = STORY_LIST[idx];
+  if (!story) return;
+
+  stopStoryPlayer();
+  storyPlayerEnabled = true;
+  storyPlayerStarted = true;
+
+  var btn = document.getElementById('storyBtnText');
+  if (btn) btn.textContent = '关闭故事';
+
+  var ind = document.getElementById('storyPlayerIndicator');
+  if (ind) ind.style.display = '';
+
+  var audio = new Audio('sounds/voices/' + story.file);
+  audio.volume = storyPlayerVolume;
+  audio.onended = function() {
+    if (storyPlayerStarted) {
+      setTimeout(playNextStory, 2000);
+    }
+  };
+  audio.onerror = function() {
+    if (storyPlayerStarted) {
+      setTimeout(playNextStory, 3000);
+    }
+  };
+  audio.play().catch(function() {});
+  storyPlayerAudio = audio;
+  if (storyPlayerTitleEl) {
+    storyPlayerTitleEl.textContent = '▶ ' + story.title;
+  }
+
+  startDuckCheck();
+
+  // Set current index for next/prev
+  for (var i = 0; i < storyPlayerOrder.length; i++) {
+    if (storyPlayerOrder[i] === idx) {
+      storyPlayerCurrentIndex = i;
+      break;
+    }
+  }
+
+  var s = loadSettings();
+  s.storyPlayerEnabled = true;
+  Storage.set('settings', s);
+
+  showToast('正在播放：' + story.title);
+}
+
+// Click on indicator title to open playlist
+document.addEventListener('DOMContentLoaded', function() {
+  var ind = document.getElementById('storyPlayerTitle');
+  if (ind) {
+    ind.style.cursor = 'pointer';
+    ind.title = '点击浏览全部故事';
+    ind.onclick = function() { openStoryPlaylist(); };
+  }
+});

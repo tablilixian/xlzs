@@ -250,6 +250,10 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8" fill="currentColor"></polygon></svg>
           <span id="storyBtnText">背景故事</span>
         </button>
+        <button class="btn btn-ghost btn-full" onclick="openStoryPlaylist()" title="浏览全部故事">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          <span>故事列表</span>
+        </button>
         <button class="btn btn-ghost btn-full" onclick="toggleVibration()">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h4l3-9 4 18 3-9h6"></path></svg>
           <span id="vibBtnText">震动模式</span>
@@ -505,6 +509,10 @@
             <span style="font-size:0.7rem;color:var(--muted)">100%</span>
           </div>
           <div style="font-size:0.8rem;color:var(--accent);margin-top:0.25rem" id="storyDuckDisplay">70%</div>
+        </div>
+        <div class="setting-item">
+          <label>浏览全部故事</label>
+          <button class="btn btn-sm btn-ghost" onclick="openStoryPlaylist()">📖 打开列表</button>
         </div>
       </div>
     </div>
